@@ -1,0 +1,49 @@
+/* Polices système, aucun appel réseau au runtime. Démonstrateur offline. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply font-sans text-etat-ink bg-etat-bg;
+    margin: 0;
+    /* Confort de lecture pour un public âgé : corps généreux, interligne large. */
+    font-size: 1.125rem;
+    line-height: 1.65;
+  }
+
+  /* Titres en bleu roi URSSAF (signature de la charte). */
+  h1,
+  h2,
+  h3 {
+    @apply text-etat-blue;
+    line-height: 1.25;
+  }
+
+  /* Anneau de focus visible, exigence accessibilité (RGAA). */
+  :focus-visible {
+    outline: 3px solid #1e3d8e;
+    outline-offset: 2px;
+  }
+}
+
+/* Animation d'ondes vocales (assistant vocal). 100 % CSS, aucun appel réseau. */
+@keyframes onde-vocale {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.barre-onde {
+  transform-origin: center;
+  animation: onde-vocale 0.9s ease-in-out infinite;
+}

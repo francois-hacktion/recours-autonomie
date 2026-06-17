@@ -1,0 +1,18 @@
+# Dépendances
+node_modules/
+
+# Build
+dist/
+build/
+
+# Secrets (clé Mistral EU, etc.)
+.env
+.env.local
+.dev.vars
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
