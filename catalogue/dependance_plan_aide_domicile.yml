@@ -1,0 +1,44 @@
+# Fiche variable d'évaluation — Plan d'aide à domicile
+
+skill:
+  name: dependance_plan_aide_domicile
+  description: >
+    Variable d'évaluation, pas une aide. Déclencher quand le moteur a besoin de connaître
+    le contenu et le montant du plan d'aide à domicile élaboré par le département,
+    pour calculer l'APA à domicile.
+    Mots-clés : plan d'aide, plan d'aide APA, équipe médico-sociale, heures d'aide à domicile,
+    portage de repas, téléassistance, aide à domicile.
+  domaine: Dépendance
+  certitude: evaluation
+
+id: dependance_plan_aide_domicile
+libelle: "Plan d'aide à domicile (APA)"
+type: variable_evaluation
+gestionnaire: departemental
+
+resume_falc: >
+  Le plan d'aide, c'est la liste des aides dont vous avez besoin pour rester chez vous :
+  par exemple des heures d'aide à domicile, le portage des repas, la téléassistance,
+  du matériel.
+  C'est l'équipe médico-sociale du département qui prépare ce plan, après une visite chez vous.
+  Le plan dit ce qu'il faut, et combien ça coûte chaque mois.
+  L'APA à domicile sert à payer ce plan, en partie ou en totalité.
+  Ce plan n'est pas calculé par le moteur : c'est le département qui le construit avec vous.
+
+explication:
+  qui_evalue: "L'équipe médico-sociale du conseil départemental (souvent un travailleur social et un soignant), lors d'une visite à domicile."
+  comment_obtenu: "Après l'évaluation du GIR, l'équipe propose un plan d'aide adapté à vos besoins et à votre situation. Vous pouvez accepter ou demander à le modifier."
+  echelle: "Le plan est exprimé en euros par mois ; il est plafonné selon le GIR (montants maximaux nationaux par GIR pour l'APA à domicile)."
+
+openfisca:
+  variable: apa_domicile_plan_aide
+
+avertissements:
+  - "Cette donnée est fixée par l'équipe médico-sociale du département, pas calculée par le moteur."
+  - "Le montant de l'APA dépend du plan d'aide réellement utilisé, du GIR et des ressources de la personne."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F10009 « Allocation personnalisée d'autonomie (APA) » - plan d'aide à domicile (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr - « L'APA à domicile » (consulté 17/06/2026)"

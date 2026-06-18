@@ -1,0 +1,77 @@
+# Fiche aide — Allocation veuvage
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: allocation_veuvage
+  description: >
+    Déclencher pour une personne veuve de moins de 55 ans, dont l'époux(se)
+    décédé(e) cotisait à l'assurance vieillesse, qui ne peut pas encore
+    prétendre à la pension de réversion. Aide temporaire et sous conditions
+    de ressources.
+    Mots-clés : allocation veuvage, veuf, veuve, décès du conjoint,
+    moins de 55 ans, avant la réversion, allocation temporaire décès.
+  domaine: Ressources
+  certitude: cas_par_cas
+
+id: allocation_veuvage
+libelle: "Allocation veuvage"
+gestionnaire: caisse_retraite
+fiabilite: cas_par_cas
+
+resume_falc: >
+  L'allocation veuvage est une aide versée chaque mois à une personne dont
+  le mari ou la femme est décédé(e), si elle a moins de 55 ans. C'est une
+  aide temporaire (2 ans au maximum) en attendant la pension de réversion.
+  Il faut avoir de petits revenus et ne pas vivre en couple.
+
+conditions:
+  - "Avoir moins de 55 ans (à 55 ans et plus : demander la pension de réversion)"
+  - "Avoir été marié(e) avec la personne décédée (le concubinage et le Pacs n'ouvrent pas droit)"
+  - "Ne pas être divorcé(e) du défunt et ne pas vivre en couple (remariage, Pacs, concubinage = arrêt du droit)"
+  - "Résider en France (des exceptions existent)"
+  - "Ressources des 3 mois civils avant la demande inférieures à 2 698,43 € (soit 899,48 €/mois) — 2026"  # à reconfirmer chaque année
+  - "L'époux(se) décédé(e) devait avoir cotisé à l'assurance vieillesse au moins 3 mois dans l'année précédant le décès"
+
+requires:
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: date_deces_conjoint
+    question_falc: "À quelle date votre époux ou épouse est-il/elle décédé(e) ?"
+    type: date
+  - champ: marie_avec_defunt
+    question_falc: "Étiez-vous marié(e) avec la personne décédée ?"
+    type: booleen
+  - champ: vit_en_couple
+    question_falc: "Vivez-vous actuellement en couple (remariage, Pacs, concubinage) ?"
+    type: booleen
+  - champ: ressources_3_mois
+    question_falc: "Combien d'argent avez-vous reçu au total ces 3 derniers mois ?"
+    type: montant_mensuel
+    si_inconnu: estimer
+
+openfisca:
+  sortie: null
+  eligibilite: null
+  base_ressources: null
+  entrees: []
+
+demarche:
+  ou: "Auprès de la caisse du dernier lieu de travail de l'époux(se) décédé(e) — Assurance retraite (Cnav/Carsat) pour le régime général, ou MSA pour le régime agricole. La demande peut aussi être envoyée à la caisse de votre domicile."
+  comment: "Remplir la demande d'allocation de veuvage (formulaire Cnav R1339 pour le régime général, R32890 pour la MSA) et l'envoyer avec les justificatifs. À faire dans les 2 ans suivant le décès ; dans les 12 premiers mois, l'allocation est due rétroactivement au 1er jour du mois du décès."
+  resolution_guichet: "Assurance retraite au 39 60 (lundi-vendredi, 8h-17h) ou MSA selon le régime."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F744"
+
+avertissements:
+  - "ATTENTION : cette aide n'est PAS modélisée dans OpenFisca (openfisca: null). L'éligibilité et le montant ne peuvent pas être calculés automatiquement par le moteur ; traitement au cas par cas et orientation vers la caisse de retraite."
+  - "Aide temporaire : versée 2 ans au maximum (ou jusqu'à 55 ans si la personne avait 50 ans à la date du décès)."
+  - "Montant net maximum 719,58 €/mois (2026), réduit selon les ressources. À reconfirmer chaque année (revalorisation au 1er janvier)."  # à vérifier 2026
+  - "Le moindre changement de situation (ressources, remariage, Pacs, concubinage) doit être signalé à la caisse et peut interrompre le droit."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F744 « Allocation veuvage » (vérifiée le 17/06/2026, fiche datée du 05/01/2026)"
+  - niveau: institution
+    ref: "service-public.fr / DILA — montant net 719,58 €/mois ; plafond ressources 2 698,43 € sur 3 mois (899,48 €/mois) ; condition d'âge < 55 ans ; durée max 2 ans (valeurs 2026)"
+  - niveau: institution
+    ref: "Code de la sécurité sociale, art. L356-1 à L356-5 et D356-1 à D356-13 (legifrance)"

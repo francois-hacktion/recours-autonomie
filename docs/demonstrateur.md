@@ -1,24 +1,29 @@
 # Le démonstrateur (`app/`)
 
-> Document de connaissance. Maintenu en Français, guillemets droits. À jour le 2026-06-17.
+> Document de connaissance. Maintenu en Français, guillemets droits. À jour le 2026-06-18.
 > Décrit l'état réel de l'interface scriptée présentée au jury. Rien ici n'est la vraie app
 > (voir la distinction cible / démonstrateur dans le CLAUDE.md, section 1).
 
 ---
 
-## 1. Navigation
+## 1. Navigation et présentation
 
-Un hub d'accueil ouvre sur trois démos et un écran « problème ». Navigation par état en
-mémoire (`useState<Vue>` dans `app/src/App.tsx`), pas de routing, pas d'URL. Type des vues
-dans `app/src/lib/vue.ts` : `accueil | assure | aidant | vocal | labyrinthe`.
+Navigation par **onglets** en haut de page (barre sticky dans `app/src/App.tsx`), un onglet par
+écran, dans l'ordre de présentation, la démo vocale étant le cœur de l'offre :
+`Accueil · Le problème · Assistant vocal · Espace aidant · Parcours guidé`. Navigation par état en
+mémoire (`useState<Vue>`), pas de routing, pas d'URL. Type des vues dans `app/src/lib/vue.ts` :
+`accueil | assure | aidant | vocal | labyrinthe`.
 
-| Écran | Fichier | Rôle |
+Les écrans qui montrent la future app sont pensés **plein écran paysage** pour la projection
+(largeur `max-w-projection`, token Tailwind).
+
+| Écran (onglet) | Fichier | Rôle |
 |---|---|---|
-| Accueil | `screens/Accueil.tsx` | Hub : 3 portes d'entrée + accès au labyrinthe. Décor géométrique, encart doré « Bon à savoir » |
-| Parcours guidé (assuré) | `screens/ParcoursAssure.tsx` | 4 questions au clic → étape moteur → restitution APA + ASPA |
+| Accueil | `screens/Accueil.tsx` | Vitrine publique : hero « La technologie au service de nos aînés », le drame (vraies stats), la solution, la souveraineté, la transparence |
+| Le problème | `screens/Labyrinthe.tsx` | ≈ 28 dispositifs, niveaux de certitude, fond de dédale |
+| Assistant vocal | `screens/AssistantVocal.tsx` | La personne parle, transcription progressive, réassurance, restitution, puis **mise en relation jouée** (choix du canal, fiche d'appel ou mail envoyé par le service après consentement) |
 | Espace aidant | `screens/EspaceAidant.tsx` | Tableau de bord d'un proche qui pilote les aides d'un aîné (Jeanne, 84 ans) |
-| Assistant vocal | `screens/AssistantVocal.tsx` | La personne parle, transcription progressive, bulles de réassurance, restitution |
-| Labyrinthe des aides | `screens/Labyrinthe.tsx` | Le problème : ≈ 28 dispositifs, niveaux de certitude, fond de dédale |
+| Parcours guidé | `screens/ParcoursAssure.tsx` | 4 questions au clic → étape moteur → restitution APA + ASPA |
 
 ## 2. Le garde-fou matérialisé
 
@@ -39,6 +44,7 @@ tableau de bord aidant. Tous les chiffres sortent du même moteur.
 | `data/dialogueVocal.ts` | Script vocal empathique (question + dictée + réassurance + confirmation) |
 | `data/aidant.ts` | 8 aides du tableau de bord aidant (statut, régime, montant, prochaine action) |
 | `data/labyrinthe.ts` | Catalogue complet des ≈ 28 dispositifs (domaine, gestionnaire, source, certitude) |
+| `data/miseEnRelation.ts` | Guichets fictifs façon DILA, fiche d'appel, gabarit de mail minimisé, adresse de service |
 
 ## 4. Charte graphique
 

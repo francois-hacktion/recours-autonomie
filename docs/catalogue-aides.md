@@ -27,7 +27,7 @@ Niveaux de certitude (repris dans l'écran « Labyrinthe » du démonstrateur,
 
 ---
 
-## 2. Catégorie A — Aides CALCULABLES via API publique (OpenFisca) — le noyau du produit
+## 2. Catégorie A : aides CALCULABLES via API publique (OpenFisca), le noyau du produit
 
 ### Ressources / minimum vieillesse
 | Aide | Variable OpenFisca | Statut |
@@ -70,7 +70,7 @@ Niveaux de certitude (repris dans l'écran « Labyrinthe » du démonstrateur,
 
 ---
 
-## 3. Catégorie B — Aides DESCRIPTIBLES (open data service-public.fr) mais NON calculables par formule nationale
+## 3. Catégorie B : aides DESCRIPTIBLES (open data service-public.fr) mais NON calculables par formule nationale
 
 | Aide | Gestionnaire | Pourquoi non calculable |
 |---|---|---|
@@ -83,7 +83,7 @@ Niveaux de certitude (repris dans l'écran « Labyrinthe » du démonstrateur,
 
 ---
 
-## 4. Catégorie C — Hors de toute API publique calculable
+## 4. Catégorie C : hors de toute API publique calculable
 
 - Aides extralégales départementales (au-delà du socle légal).
 - Aides communales / CCAS (variables selon les ~35 000 communes).
@@ -96,7 +96,7 @@ Niveaux de certitude (repris dans l'écran « Labyrinthe » du démonstrateur,
 
 ---
 
-## 5. Catégorie D — Données d'offre (data.gouv.fr / CNSA) — pas des aides
+## 5. Catégorie D : données d'offre (data.gouv.fr / CNSA), pas des aides
 
 Annuaires EHPAD, résidences autonomie, SAAD, SSIAD, points d'information, départements.
 Servent à résoudre le **bon guichet**, pas à calculer un droit.
@@ -107,7 +107,7 @@ Servent à résoudre le **bon guichet**, pas à calculer un droit.
 
 | Brique | Source |
 |---|---|
-| Calcul | **OpenFisca-France** (moteur de règles déterministe, API web publique) — source de vérité des montants |
+| Calcul | **OpenFisca-France** (moteur de règles déterministe, API web publique), source de vérité des montants |
 | Catalogue | pattern `betagouv/aides-jeunes` (une aide = un YAML, mappé à OpenFisca + fiche service-public) |
 | Connaissance | open data **service-public.fr** (DILA), portail **pour-les-personnes-agees.gouv.fr** |
 | Offre (où déposer) | open data **CNSA** sur **data.gouv.fr** |

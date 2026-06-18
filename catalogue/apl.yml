@@ -1,0 +1,73 @@
+# Fiche aide — APL (Aide personnalisée au logement)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: apl
+  description: >
+    Déclencher pour une personne qui paie un loyer (ou une redevance en
+    résidence) dans un logement conventionné avec l'État, et qui a de petits
+    revenus. Mots-clés : aide au logement, loyer, APL, CAF, MSA, logement
+    conventionné, HLM, résidence conventionnée.
+  domaine: Logement
+  certitude: auto
+
+id: apl
+libelle: "Aide personnalisée au logement (APL)"
+gestionnaire: caf_msa
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'APL aide à payer votre loyer chaque mois. Elle est versée par la CAF
+  ou la MSA. Vous pouvez l'avoir si votre logement a une convention avec
+  l'État (par exemple un logement HLM ou une résidence conventionnée) et si
+  vous avez de petits revenus. L'APL est souvent versée directement au
+  propriétaire ou à la résidence : votre loyer à payer baisse d'autant.
+
+conditions:
+  - "Habiter dans un logement conventionné avec l'État (le propriétaire ou la résidence le sait)."
+  - "Ce logement doit être votre résidence principale (vous y vivez plus de 8 mois par an)."
+  - "Avoir des revenus en dessous des plafonds fixés par la CAF."
+  - "Le logement doit être décent (en bon état)."
+  - "Résider en France de façon stable et régulière."
+  - "On ne peut pas cumuler APL, ALS et ALF : une seule aide au logement est versée selon votre situation et votre logement."
+
+requires:
+  - champ: logement_conventionne
+    question_falc: "Votre logement (ou votre résidence) a-t-il une convention avec l'État ? Le propriétaire ou le gestionnaire peut vous le dire."
+    type: booleen
+  - champ: loyer
+    question_falc: "Quel est le montant de votre loyer chaque mois (sans les charges) ?"
+    type: montant_mensuel
+  - champ: ressources_menage
+    question_falc: "Quels sont vos revenus chaque mois (retraite, salaire, autres) ?"
+    type: montant_mensuel
+  - champ: statut_occupation
+    question_falc: "Êtes-vous locataire, résident en foyer, ou propriétaire ?"
+    type: enum
+
+openfisca:
+  sortie: apl
+  eligibilite: null
+  base_ressources: null
+  entrees:
+    - logement_conventionne
+    - loyer
+    - statut_occupation
+
+demarche:
+  ou: "CAF (caf.fr) ou MSA (msa.fr) selon votre régime."
+  comment: "Demande en ligne sur le site de la CAF ou de la MSA, ou formulaire papier disponible à l'accueil."
+  resolution_guichet: "Point conseil budget, France Services, ou accueil CAF/MSA pour être aidé dans la demande."
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F12006"
+
+avertissements:
+  - "On ne peut percevoir qu'une seule aide au logement : APL, ALS ou ALF. C'est la situation (logement conventionné ou non, présence d'enfant ou ascendant à charge) qui détermine laquelle. La CAF/MSA choisit automatiquement."
+  - "Les ressources prises en compte sont calculées sur les 12 derniers mois, avec une mise à jour tous les 3 mois."
+  - "Plafond de ressources R0 gelé pour 2026 (décret n° 2025-1401 du 28/12/2025) : à vérifier les montants exacts CAF avant affichage."
+  - "Le montant exact dépend du loyer, de la zone géographique et de la composition du foyer : à confirmer par simulation CAF."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr / DILA, fiche F12006 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "caf.fr, éditeur du service de demande d'aide au logement"

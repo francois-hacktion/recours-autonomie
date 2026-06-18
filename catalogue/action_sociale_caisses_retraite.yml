@@ -1,0 +1,77 @@
+# Fiche aide — Action sociale des caisses de retraite (ARDH, kits prévention, PAP)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: action_sociale_caisses_retraite
+  description: >
+    Déclencher pour un retraité peu dépendant (GIR 5 ou 6), NON bénéficiaire de l'APA,
+    de la PCH ou de la PSD, qui a besoin d'un coup de pouce temporaire : retour à domicile
+    après une hospitalisation (ARDH), plan d'actions personnalisé pour bien vieillir chez soi,
+    ou kit de prévention (barres d'appui, rehausse WC, siège de douche).
+    Mots-clés : Carsat, MSA, caisse de retraite, ARDH, retour à domicile, sortie d'hôpital,
+    plan d'actions personnalisé, PAP, kit prévention, bien vieillir, GIR 5, GIR 6.
+  domaine: Dépendance
+  certitude: cas_par_cas
+
+id: action_sociale_caisses_retraite
+libelle: "Action sociale de l'Assurance retraite (Carsat / MSA) : ARDH, plan d'actions personnalisé, kits prévention"
+gestionnaire: caisse_retraite
+fiabilite: cas_par_cas
+
+resume_falc: >
+  Votre caisse de retraite (la Carsat, ou la MSA si vous êtes du monde agricole) peut vous aider
+  si vous êtes peu dépendant (GIR 5 ou 6) et que vous n'avez pas l'APA ni la PCH.
+  Elle propose surtout :
+  - l'aide au retour à domicile après une hospitalisation (ARDH) : de l'aide à la maison
+    pendant quelques semaines après l'hôpital ;
+  - un plan d'actions personnalisé pour bien vivre chez vous (aide-ménagère, portage de repas, sorties) ;
+  - des kits de prévention pour éviter les chutes (barres d'appui, rehausse de WC, siège de douche).
+  Une personne vient évaluer vos besoins. Vous payez une partie selon vos revenus.
+
+conditions:
+  - "Être retraité (souvent du régime général pour la Carsat, agricole pour la MSA)."
+  - "Être peu dépendant : reconnu GIR 5 ou 6."
+  - "NE PAS bénéficier de l'APA, de la PCH ni de la PSD (ces aides rendent non éligible à l'action sociale de la caisse)."
+  - "Pour l'ARDH : sortir d'une hospitalisation et faire la demande très vite (avant la sortie ou dans les jours qui suivent)."
+
+requires:
+  - champ: regime_retraite
+    question_falc: "De quelle caisse de retraite dépendez-vous (régime général / Carsat, ou agricole / MSA) ?"
+    type: enum
+  - champ: gir
+    question_falc: "Êtes-vous peu dépendant (GIR 5 ou 6) ?"
+    type: enum
+  - champ: beneficie_apa_pch
+    question_falc: "Recevez-vous déjà l'APA, la PCH ou la PSD ?"
+    type: booleen
+  - champ: sortie_hospitalisation
+    question_falc: "Sortez-vous (ou allez-vous sortir) d'une hospitalisation ?"
+    type: booleen
+
+openfisca:
+  sortie: null
+  eligibilite: null
+  entrees: []
+
+demarche:
+  ou: "Auprès de votre caisse de retraite (Carsat de votre région, ou MSA). Pour l'ARDH, le service social de l'hôpital fait souvent la demande avant la sortie."
+  comment: >
+    Vous (ou l'assistante sociale de l'hôpital) contactez la caisse de retraite.
+    Une structure évaluatrice vient à domicile, fait le point sur vos besoins et propose un plan.
+    Vous recevez ensuite l'aide (heures d'aide à domicile, repas, kit prévention).
+  resolution_guichet: >
+    La caisse de retraite est le bon guichet. Pour l'ARDH, faire vite : la demande doit
+    être engagée avant la sortie d'hôpital ou très peu de temps après (souvent sous 48 h via l'hôpital).
+  lien_fiche: "à vérifier : action sociale Carsat ARDH (voir le site de votre Carsat régionale et lassuranceretraite.fr ; pas de fiche service-public.fr numérotée dédiée)"
+
+avertissements:
+  - "Les barèmes, plafonds et taux de participation sont propres à chaque caisse et varient : il n'y a pas de barème national unique."
+  - "L'ARDH est une aide momentanée (souvent 3 mois maximum après le retour à domicile, plafond d'environ 1 800 €). # à vérifier 2026"
+  - "Avoir l'APA, la PCH ou la PSD rend non éligible : ces aides ne se cumulent pas avec l'action sociale de la caisse."
+  - "Comme les barèmes dépendent de chaque caisse, le moteur ne calcule pas le montant (openfisca: null)."
+
+sources:
+  - niveau: institution
+    ref: "lassuranceretraite.fr - action sociale / aide au retour à domicile après hospitalisation (à vérifier, consulté 17/06/2026)"
+  - niveau: institution
+    ref: "Sites Carsat régionaux (ex. Carsat Pays de la Loire, Carsat LR) - « Aide après une hospitalisation » (consulté 17/06/2026)"

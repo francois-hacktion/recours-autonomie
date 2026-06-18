@@ -26,7 +26,7 @@ const PRIORITES = AIDES.filter((a) => a.statut === 'a_demander' || a.statut === 
 
 export function EspaceAidant() {
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-6">
+    <div className="mx-auto w-full max-w-projection space-y-6">
       {/* En-tête : qui on accompagne. */}
       <header className="rounded-xl border border-etat-border bg-white shadow-carte p-5 sm:p-6">
         <div className="flex items-start gap-4">
@@ -91,7 +91,7 @@ export function EspaceAidant() {
       {/* Toutes les aides. */}
       <section>
         <h2 className="mb-3 text-lg font-bold">🗂️ Toutes les aides de Jeanne</h2>
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {AIDES.map((a) => (
             <CarteAide key={a.id} aide={a} />
           ))}

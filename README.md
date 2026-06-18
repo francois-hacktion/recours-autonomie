@@ -19,9 +19,9 @@ projet et les décisions techniques.
 
 ## Documentation
 
-- [docs/catalogue-aides.md](./docs/catalogue-aides.md) — recensement complet des aides (≈ 28 dispositifs, variables OpenFisca, sources).
-- [docs/analyse-parcours-zenior.md](./docs/analyse-parcours-zenior.md) — analyse du concurrent Zenior et couverture de ses 15 questions.
-- [docs/demonstrateur.md](./docs/demonstrateur.md) — écrans, charte graphique, garde-fou moteur.
+- [docs/catalogue-aides.md](./docs/catalogue-aides.md) : recensement complet des aides (≈ 28 dispositifs, variables OpenFisca, sources).
+- [docs/analyse-parcours-zenior.md](./docs/analyse-parcours-zenior.md) : analyse du concurrent Zenior et couverture de ses 15 questions.
+- [docs/demonstrateur.md](./docs/demonstrateur.md) : écrans, charte graphique, garde-fou moteur.
 
 ## Lancer le démonstrateur
 

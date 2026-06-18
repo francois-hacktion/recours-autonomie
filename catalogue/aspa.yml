@@ -1,0 +1,69 @@
+# Fiche aide — ASPA (Allocation de solidarité aux personnes âgées)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: aspa
+  description: >
+    Déclencher pour une personne âgée (65 ans et plus, ou 62 ans en cas
+    d'inaptitude au travail) aux ressources modestes, déjà retraitée, qui
+    pourrait compléter ses revenus jusqu'au minimum garanti.
+    Mots-clés : minimum vieillesse, ASPA, petite retraite, ressources faibles,
+    65 ans, complément de retraite, allocation solidarité personnes âgées.
+  domaine: Ressources
+  certitude: auto
+
+id: aspa
+libelle: "Allocation de solidarité aux personnes âgées (Aspa)"
+gestionnaire: caisse_retraite
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'Aspa est une aide versée chaque mois aux personnes âgées qui ont de
+  petites retraites. Elle complète vos revenus pour atteindre un minimum.
+  On l'appelle aussi le "minimum vieillesse". Il faut avoir au moins 65 ans
+  et vivre en France.
+
+conditions:
+  - "Avoir au moins 65 ans (ou 62 ans en cas d'inaptitude au travail / invalidité)"
+  - "Résider en France de façon stable (au moins 9 mois, soit 270 jours, par an)"
+  - "Percevoir déjà une retraite personnelle ou de réversion (sinon : voir la SASPA via le CCAS)"
+  - "Avoir des ressources inférieures au plafond : 1 043,59 €/mois pour une personne seule, 1 620,18 €/mois pour un couple (au 01/01/2026)"  # à reconfirmer chaque année
+  - "Pour les ressortissants hors EEE/Suisse : détenir un titre de séjour depuis au moins 10 ans"
+
+requires:
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: ressources_mensuelles
+    question_falc: "Combien d'argent recevez-vous chaque mois (retraites, revenus) ?"
+    type: montant_mensuel
+    si_inconnu: estimer
+  - champ: situation_familiale
+    question_falc: "Vivez-vous seul(e) ou en couple ?"
+    type: enum
+  - champ: reside_france
+    question_falc: "Vivez-vous en France au moins 9 mois par an ?"
+    type: booleen
+
+openfisca:
+  sortie: aspa
+  eligibilite: aspa_eligibilite
+  base_ressources: aspa_base_ressources
+  entrees: [date_naissance, retraite_combinee, asi_aspa_base_ressources_individuelle, taux_incapacite]
+
+demarche:
+  ou: "Auprès de votre caisse de retraite (Carsat, MSA, Sécurité sociale des indépendants...). Si vous ne touchez aucune retraite, la demande se fait au CCAS de votre mairie (dispositif SASPA, géré par la CDC)."
+  comment: "Remplir le formulaire de demande d'Aspa et le renvoyer avec les justificatifs de ressources à votre caisse de retraite."
+  resolution_guichet: "Assurance retraite au 39 60 (du lundi au vendredi, 8h-17h) ou MSA selon votre régime."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F16871"
+
+avertissements:
+  - "L'Aspa est récupérable sur la succession au décès, si l'actif net successoral dépasse un certain seuil. À signaler à la personne."
+  - "Le montant versé est différentiel : il complète vos ressources jusqu'au plafond, il n'est pas forfaitaire."
+  - "Plafonds et montants 2026 à reconfirmer chaque année (revalorisation au 1er janvier)."  # à vérifier 2026
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F16871 « Allocation de solidarité aux personnes âgées (Aspa) » (vérifiée le 17/06/2026 ; fiche mise à jour pour 2026)"
+  - niveau: institution
+    ref: "service-public.fr / DILA — plafonds 2026 : 1 043,59 €/mois personne seule (12 523,14 €/an), 1 620,18 €/mois couple (19 442,21 €/an), en vigueur au 01/01/2026"

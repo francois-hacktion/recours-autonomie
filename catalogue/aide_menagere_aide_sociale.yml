@@ -1,0 +1,70 @@
+# Fiche aide — Aide-ménagère au titre de l'aide sociale départementale
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: aide_menagere_aide_sociale
+  description: >
+    Déclencher pour une personne âgée à faibles revenus, qui a besoin d'aide pour
+    les tâches du quotidien (ménage, courses, repas) mais qui N'A PAS droit à l'APA
+    (notamment GIR 5 ou 6). Aide sociale départementale, sous condition de ressources.
+    Mots-clés : aide-ménagère, aide sociale, services ménagers, ménage, courses, repas,
+    GIR 5, GIR 6, pas d'APA, faibles revenus.
+  domaine: Dépendance
+  certitude: cas_par_cas
+
+id: aide_menagere_aide_sociale
+libelle: "Aide-ménagère à domicile au titre de l'aide sociale départementale"
+gestionnaire: departemental
+fiabilite: cas_par_cas
+
+resume_falc: >
+  L'aide-ménagère de l'aide sociale, c'est une personne qui vient chez vous pour vous aider :
+  ménage, linge, courses, repas, et un peu de compagnie.
+  Cette aide est pour les personnes âgées qui ont de faibles revenus ET qui n'ont pas droit à l'APA
+  (par exemple les GIR 5 et 6, peu dépendants).
+  C'est le département qui décide, selon vos revenus.
+  Attention : cette aide peut être récupérée plus tard sur votre héritage (succession).
+
+conditions:
+  - "Avoir au moins 65 ans (ou 60 ans si reconnu inapte au travail par le président du conseil départemental, sur avis médical)."
+  - "Ne PAS bénéficier de l'APA (cette aide intervient à défaut d'APA)."
+  - "Avoir des revenus inférieurs à un plafond mensuel (1 043,59 € pour une personne seule, 1 620,18 € pour un couple en 2026). # à vérifier 2026"
+  - "Avoir besoin d'aide pour les tâches ménagères du quotidien."
+
+requires:
+  - champ: age
+    question_falc: "Quel âge avez-vous ?"
+    type: date
+  - champ: beneficie_apa
+    question_falc: "Recevez-vous déjà l'APA ?"
+    type: booleen
+  - champ: revenus_mensuels
+    question_falc: "Quels sont vos revenus chaque mois ?"
+    type: montant_mensuel
+
+openfisca:
+  sortie: null
+  eligibilite: null
+  entrees: []
+
+demarche:
+  ou: "Au CCAS (centre communal d'action sociale) ou à la mairie de votre commune."
+  comment: >
+    Vous déposez un dossier d'aide sociale au CCAS ou à la mairie, qui le transmet au département.
+    Vous joignez vos justificatifs de revenus et de domicile. Le département décide du nombre d'heures.
+  resolution_guichet: >
+    Le CCAS / la mairie sont le bon guichet de dépôt ; le département décide.
+    Les règles précises (plafonds, heures) varient d'un département à l'autre.
+  lien_fiche: "à vérifier : aide ménagère aide sociale personnes âgées service-public.fr (pas de fiche numérotée dédiée identifiée ; voir pour-les-personnes-agees.gouv.fr « L'aide-ménagère à domicile »)"
+
+avertissements:
+  - "L'aide est limitée à environ 30 heures par mois (48 heures si les 2 membres d'un couple en bénéficient). # à vérifier 2026"
+  - "C'est une aide récupérable sur la succession : le département peut la récupérer sur l'héritage si l'actif net dépasse 46 000 €. # à vérifier 2026"
+  - "On ne peut pas cumuler l'aide-ménagère de l'aide sociale avec l'APA : c'est l'une OU l'autre."
+  - "Les conditions exactes (plafonds, nombre d'heures, récupération) sont fixées par chaque département : décision au cas par cas."
+
+sources:
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr - « L'aide-ménagère à domicile » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "Code de l'action sociale et des familles, aide sociale aux personnes âgées (à vérifier : articles L231-1 et suivants)"

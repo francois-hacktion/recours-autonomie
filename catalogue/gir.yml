@@ -1,0 +1,44 @@
+# Fiche variable d'évaluation — GIR (groupe iso-ressources)
+
+skill:
+  name: gir
+  description: >
+    Variable d'évaluation, pas une aide. Déclencher quand le moteur a besoin de connaître
+    le niveau de dépendance de la personne (de 1 à 6) pour savoir si elle peut avoir l'APA,
+    l'aide-ménagère, ou l'action sociale des caisses.
+    Mots-clés : GIR, groupe iso-ressources, niveau de dépendance, grille AGGIR, perte d'autonomie.
+  domaine: Dépendance
+  certitude: evaluation
+
+id: gir
+libelle: "GIR (groupe iso-ressources)"
+type: variable_evaluation
+gestionnaire: departemental
+
+resume_falc: >
+  Le GIR, c'est votre niveau de dépendance, c'est-à-dire combien vous avez besoin d'aide
+  pour les gestes de la vie de tous les jours.
+  Il va de 1 à 6 :
+  - GIR 1 : la personne la plus dépendante (besoin d'aide pour presque tout) ;
+  - GIR 6 : la personne la plus autonome (presque pas besoin d'aide).
+  Le GIR sert à savoir quelles aides vous pouvez avoir.
+  Par exemple, l'APA est seulement pour les GIR 1 à 4.
+  C'est une équipe médico-sociale qui décide de votre GIR : ce n'est pas calculé par le moteur.
+
+explication:
+  qui_evalue: "Une équipe médico-sociale du département (pour l'APA), avec un médecin ou un professionnel formé. En établissement, c'est le médecin coordonnateur de l'EHPAD."
+  comment_obtenu: "Avec la grille nationale AGGIR : on observe ce que la personne fait seule ou non (se laver, s'habiller, se déplacer, manger, communiquer...). Cela donne un classement en GIR."
+  echelle: "1 (le plus dépendant) à 6 (le plus autonome). APA possible pour GIR 1 à 4 ; aide-ménagère et action sociale des caisses plutôt pour GIR 5 et 6."
+
+openfisca:
+  variable: gir
+
+avertissements:
+  - "Cette donnée est fixée par l'équipe médico-sociale du département (ou le médecin coordonnateur en établissement), pas calculée par le moteur."
+  - "Si la personne ne connaît pas son GIR, il faut demander une évaluation au département."
+
+sources:
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr - « Comment le GIR est-il déterminé ? » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "service-public.fr fiche F10009 « Allocation personnalisée d'autonomie (APA) » - grille AGGIR (consulté 17/06/2026)"

@@ -1,0 +1,80 @@
+# Fiche aide — MaPrimeAdapt'
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+# Cas par cas : aide sur devis, montant calculé après évaluation des travaux et des ressources.
+
+skill:
+  name: maprimeadapt
+  description: >
+    Déclencher pour une personne âgée ou en perte d'autonomie qui veut adapter
+    son logement : remplacer la baignoire par une douche de plain-pied, poser
+    des barres d'appui, sécuriser le logement. Mots-clés : adaptation du
+    logement, douche plain-pied, barres d'appui, perte d'autonomie, chute,
+    travaux, ANAH, MaPrimeAdapt, accessibilité, maintien à domicile.
+  domaine: Logement
+  certitude: cas_par_cas
+
+id: maprimeadapt
+libelle: "MaPrimeAdapt'"
+gestionnaire: anah
+fiabilite: cas_par_cas
+
+resume_falc: >
+  MaPrimeAdapt' aide à payer les travaux pour adapter votre logement à la
+  perte d'autonomie. Par exemple : remplacer la baignoire par une douche de
+  plain-pied, poser des barres d'appui. L'aide est versée par l'ANAH. Elle
+  paie jusqu'à 50 % ou 70 % du coût des travaux, selon vos revenus. Un
+  professionnel (assistant à maîtrise d'ouvrage) vous accompagne, c'est
+  obligatoire.
+
+conditions:
+  - "Avoir 70 ans ou plus, OU avoir entre 60 et 69 ans avec une perte d'autonomie reconnue (GIR), OU avoir un taux d'incapacité d'au moins 50 %, OU recevoir la PCH (prestation de compensation du handicap)."
+  - "Avoir des revenus modestes ou très modestes (plafonds de ressources ANAH selon le foyer et la région)."
+  - "Être propriétaire occupant ou locataire du parc privé."
+  - "Faire appel à un assistant à maîtrise d'ouvrage (AMO) : c'est obligatoire."
+
+requires:
+  - champ: age
+    question_falc: "Quel âge avez-vous ?"
+    type: date
+  - champ: gir_ou_incapacite
+    question_falc: "Avez-vous une perte d'autonomie reconnue (un GIR), un taux d'incapacité d'au moins 50 %, ou recevez-vous la PCH ?"
+    type: enum
+    si_inconnu: estimer
+  - champ: ressources_menage
+    question_falc: "Quels sont les revenus de votre foyer ? (pour savoir si vous êtes en revenus modestes ou très modestes)"
+    type: montant_mensuel
+  - champ: statut_occupation
+    question_falc: "Êtes-vous propriétaire de votre logement, ou locataire dans le privé ?"
+    type: enum
+
+openfisca:
+  sortie: null
+  eligibilite: null
+  base_ressources: null
+  entrees:
+    - age
+    - gir_ou_incapacite
+    - ressources_menage
+    - statut_occupation
+
+demarche:
+  ou: "ANAH, sur monprojet.anah.gouv.fr. Un assistant à maîtrise d'ouvrage (AMO) vous accompagne."
+  comment: "Créer un compte sur monprojet.anah.gouv.fr, monter le dossier avec l'AMO. Les travaux doivent commencer après l'accord de l'ANAH."
+  resolution_guichet: "France Rénov' (espace conseil), point info ANAH local, CCAS, France Services."
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F37501"
+
+avertissements:
+  - "ATTENTION : le numéro de fiche service-public.fr est F37501 (et non F37907 comme indiqué dans la consigne, qui ne correspond pas à cette aide)."
+  - "Le taux d'aide est de 70 % du coût des travaux pour les foyers aux revenus très modestes, et 50 % pour les revenus modestes."
+  - "L'aide s'applique dans la limite d'un plafond de travaux de 22 000 € HT, sur une période glissante de 5 ans (source ANAH 2026)."
+  - "Le recours à un assistant à maîtrise d'ouvrage (AMO) est obligatoire."
+  - "Le montant est calculé au cas par cas, sur devis, après évaluation des travaux et des ressources : ne pas afficher de montant automatique."
+  - "Les plafonds de ressources (modeste / très modeste) varient selon la composition du foyer et la région (Île-de-France ou autres) : à vérifier sur les barèmes ANAH 2026 avant affichage."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr / DILA, fiche F37501 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "ANAH, guide mode d'emploi MaPrimeAdapt' février 2026 (anah.gouv.fr) ; taux 50/70 %, plafond 22 000 € HT sur 5 ans, AMO obligatoire"
+  - niveau: institution
+    ref: "economie.gouv.fr, page MaPrimeAdapt' (consulté 17/06/2026)"

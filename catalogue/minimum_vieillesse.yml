@@ -1,0 +1,66 @@
+# Fiche aide — Minimum vieillesse (agrégat ASI + ASPA)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: minimum_vieillesse
+  description: >
+    Déclencher comme indicateur global « minimum vieillesse » regroupant
+    l'Asi (avant l'âge de l'Aspa) et l'Aspa (à partir de 65 ans). Sert à
+    estimer le filet de ressources minimum garanti à une personne âgée ou
+    invalide modeste. Ce n'est PAS une aide à demander en tant que telle.
+    Mots-clés : minimum vieillesse, filet de ressources, garantie de revenu,
+    ASI, ASPA, agrégat.
+  domaine: Ressources
+  certitude: auto
+
+id: minimum_vieillesse
+libelle: "Minimum vieillesse (agrégat Asi + Aspa)"
+gestionnaire: caisse_retraite
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  Le "minimum vieillesse" n'est pas une aide à demander. C'est le nom donné
+  au total des deux aides : l'Asi (avant 65 ans, pour les personnes invalides)
+  et l'Aspa (à partir de 65 ans). Pour recevoir de l'argent, il faut demander
+  l'Asi ou l'Aspa, selon votre âge et votre situation.
+
+conditions:
+  - "C'est un agrégat de calcul : l'éligibilité dépend de celle de l'Asi (avant l'âge de l'Aspa) ou de l'Aspa (à partir de 65 ans / 62 ans si inaptitude)"
+  - "Voir les fiches dédiées : asi.yml et aspa.yml pour les conditions et plafonds réels"
+
+requires:
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: ressources_mensuelles
+    question_falc: "Combien d'argent recevez-vous chaque mois ?"
+    type: montant_mensuel
+    si_inconnu: estimer
+  - champ: situation_familiale
+    question_falc: "Vivez-vous seul(e) ou en couple ?"
+    type: enum
+
+openfisca:
+  sortie: minimum_vieillesse
+  eligibilite: null
+  base_ressources: null
+  entrees: [aspa, asi]
+
+demarche:
+  ou: "Il n'y a pas de demande de « minimum vieillesse » en tant que telle. Selon votre situation, faites une demande d'Asi (avant l'âge de l'Aspa) ou d'Aspa (à partir de 65 ans) auprès de votre caisse de retraite."
+  comment: "Orienter la personne vers la fiche Asi ou Aspa selon son âge et le fait qu'elle soit déjà titulaire d'une pension d'invalidité."
+  resolution_guichet: "Assurance retraite au 39 60 ; caisse de retraite ou Assurance maladie selon le régime."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F16871"
+
+avertissements:
+  - "ATTENTION : le minimum vieillesse n'est pas une prestation à demander. C'est un agrégat (Asi + Aspa) utilisé pour le calcul et les statistiques. La demande réelle porte sur l'Asi OU l'Aspa."
+  - "Dans OpenFisca, la variable `minimum_vieillesse` est la somme de `asi` et `aspa` ; elle n'a pas d'éligibilité ni de base de ressources propre."
+  - "Montants et plafonds : se référer aux fiches asi.yml et aspa.yml (valeurs 2026 à reconfirmer chaque année)."  # à vérifier 2026
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F16871 « Aspa » (le terme « minimum vieillesse » y désigne l'Aspa, ex-minimum vieillesse) — vérifiée le 17/06/2026"
+  - niveau: institution
+    ref: "service-public.fr fiche F16940 « Asi » — l'Asi est l'équivalent du minimum vieillesse avant l'âge de l'Aspa — vérifiée le 17/06/2026"
+  - niveau: institution
+    ref: "DREES — le « minimum vieillesse » désigne l'ensemble Asi + Aspa (anciennement allocation supplémentaire vieillesse) ; agrégat statistique et de calcul"

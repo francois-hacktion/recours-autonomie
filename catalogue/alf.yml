@@ -1,0 +1,67 @@
+# Fiche aide — ALF (Allocation de logement familiale)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: alf
+  description: >
+    Déclencher pour une personne qui paie un loyer avec de petits revenus et
+    qui a une personne à charge ouvrant droit à l'ALF, par exemple un parent
+    âgé (ascendant) de plus de 65 ans à charge. Mots-clés : aide au logement,
+    ALF, loyer, CAF, MSA, ascendant à charge, famille.
+  domaine: Logement
+  certitude: auto
+
+id: alf
+libelle: "Allocation de logement familiale (ALF)"
+gestionnaire: caf_msa
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'ALF aide à payer votre loyer chaque mois. Elle est versée par la CAF
+  ou la MSA. Elle concerne les personnes qui ont une personne à charge,
+  par exemple un parent âgé de plus de 65 ans qui vit avec vous, et qui
+  n'ont pas droit à l'APL.
+
+conditions:
+  - "Avoir une personne à charge ouvrant droit à l'ALF : enfant à charge, ou un ascendant (parent, grand-parent) de plus de 65 ans à charge, ou être un jeune couple, ou attendre un enfant."
+  - "Le logement doit être votre résidence principale en France."
+  - "Avoir des revenus en dessous des plafonds fixés par la CAF."
+  - "Le logement doit être décent (en bon état) et respecter des conditions minimales d'occupation."
+  - "Ne pas déjà recevoir l'APL ou l'ALS (les trois aides ne se cumulent pas)."
+
+requires:
+  - champ: personne_a_charge
+    question_falc: "Avez-vous une personne à charge ? Par exemple un parent ou grand-parent de plus de 65 ans qui vit avec vous, ou un enfant à charge."
+    type: booleen
+  - champ: loyer
+    question_falc: "Quel est le montant de votre loyer chaque mois (sans les charges) ?"
+    type: montant_mensuel
+  - champ: ressources_menage
+    question_falc: "Quels sont vos revenus chaque mois (retraite, salaire, autres) ?"
+    type: montant_mensuel
+
+openfisca:
+  sortie: alf
+  eligibilite: null
+  base_ressources: null
+  entrees:
+    - personne_a_charge
+    - loyer
+    - ressources_menage
+
+demarche:
+  ou: "CAF (caf.fr) ou MSA (msa.fr) selon votre régime."
+  comment: "Demande en ligne sur le site de la CAF ou de la MSA, ou formulaire papier disponible à l'accueil."
+  resolution_guichet: "Point conseil budget, France Services, ou accueil CAF/MSA pour être aidé dans la demande."
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F13132"
+
+avertissements:
+  - "On ne peut percevoir qu'une seule aide au logement : APL, ALS ou ALF. L'ALF n'est pas versée si vous avez déjà l'APL ou l'ALS. La CAF/MSA choisit automatiquement selon votre situation."
+  - "La notion d'ascendant à charge de plus de 65 ans ouvrant droit à l'ALF doit être confirmée auprès de la CAF/MSA pour chaque cas."
+  - "Le montant et les plafonds varient selon la composition du foyer, le loyer et la zone géographique : à vérifier par simulation CAF avant affichage."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr / DILA, fiche F13132 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "caf.fr, éditeur du service de demande d'aide au logement"

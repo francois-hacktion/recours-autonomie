@@ -1,4 +1,4 @@
-# CLAUDE.md — Projet Recours Autonomie
+# CLAUDE.md : Projet Recours Autonomie
 
 > Document central du projet. Lu en priorité à chaque session.
 > Maintenu en Français, guillemets droits. À jour le 2026-06-17.
@@ -92,7 +92,7 @@ Le calcul est isolé dans `app/src/lib/moteur.ts`, séparé de la conversation. 
 
 ---
 
-## 4. La CIBLE / documentation (`docs/` + `catalogue/`) — à construire
+## 4. La CIBLE / documentation (`docs/` + `catalogue/`), à construire
 
 Livrable doc-as-code, évalué. Base déjà fournie par François. Arborescence visée :
 
@@ -138,37 +138,41 @@ recours-autonomie/
 ├── README.md
 ├── .gitignore
 ├── docs/                (doc-as-code)
-│   ├── catalogue-aides.md        (recensement complet : ≈ 28 aides, variables OpenFisca, sources)
-│   ├── analyse-parcours-zenior.md (concurrent Zenior, couverture des 15 questions, ton empathique)
-│   ├── demonstrateur.md          (écrans, charte URSSAF, garde-fou moteur)
-│   └── adr/                       (décisions d'architecture — à écrire)
-├── catalogue/           (cible : fiches YAML — à construire)
-└── app/                 (démonstrateur — fonctionnel)
+│   ├── catalogue-aides.md            (recensement complet : ≈ 28 aides, variables OpenFisca, sources)
+│   ├── analyse-parcours-zenior.md    (concurrent Zenior, couverture des 15 questions, ton empathique)
+│   ├── demonstrateur.md              (écrans, navigation par onglets, charte URSSAF, garde-fou)
+│   ├── prompt-mise-en-relation.md    (prompt LLM : guichets DILA, envoi du mail par le service)
+│   ├── albert-et-souverainete.md     (fiche de référence LLM souverain)
+│   └── adr/
+│       └── 0004-llm-souverain.md     (ADR : Albert API, modèles, function-calling)
+├── catalogue/           (cible : fiches YAML, à construire)
+└── app/                 (démonstrateur, fonctionnel)
     ├── package.json     (vite-plugin-singlefile, react, tailwind, lucide)
     ├── vite.config.ts   (base './', singlefile, assets inlinés)
     ├── tailwind.config.js (tokens etat-* + accents teal/or/rose, charte URSSAF)
     └── src/
         ├── main.tsx
-        ├── App.tsx       (coquille + navigation par état, pas de routing)
+        ├── App.tsx       (coquille + navigation par onglets, pas de routing)
         ├── index.css
         ├── lib/
         │   ├── cn.ts
         │   ├── vue.ts    (type Vue : accueil | assure | aidant | vocal | labyrinthe)
         │   └── moteur.ts  (LE moteur : calcul déterministe, stub OpenFisca)
         ├── data/
-        │   ├── questions.ts     (script du parcours au clic)
-        │   ├── dialogueVocal.ts (script vocal empathique + réassurance)
-        │   ├── aidant.ts        (8 aides du tableau de bord aidant)
-        │   └── labyrinthe.ts    (catalogue des ≈ 28 dispositifs)
+        │   ├── questions.ts       (script du parcours au clic)
+        │   ├── dialogueVocal.ts   (script vocal empathique + réassurance)
+        │   ├── aidant.ts          (8 aides du tableau de bord aidant)
+        │   ├── labyrinthe.ts      (catalogue des ≈ 28 dispositifs)
+        │   └── miseEnRelation.ts  (guichets DILA fictifs, mail, fiche d'appel)
         ├── components/
         │   ├── DemoBanner.tsx
         │   └── Decor.tsx        (décor géométrique URSSAF)
         └── screens/
-            ├── Accueil.tsx      (hub)
+            ├── Accueil.tsx        (vitrine publique : hero, drame, solution, transparence)
             ├── ParcoursAssure.tsx
             ├── EspaceAidant.tsx
-            ├── AssistantVocal.tsx
-            └── Labyrinthe.tsx   (le problème : labyrinthe des aides)
+            ├── AssistantVocal.tsx (dialogue + restitution + mise en relation jouée)
+            └── Labyrinthe.tsx     (le problème : labyrinthe des aides)
 ```
 
 ---
@@ -187,8 +191,12 @@ recours-autonomie/
 | Labyrinthe des aides (catalogue ≈ 28 dispositifs) | Fait (17/06/2026) |
 | Charte graphique URSSAF adaptée senior | Fait (17/06/2026) |
 | Doc-as-code (catalogue, analyse Zenior, démonstrateur) | Fait (17/06/2026) |
+| Vitrine publique (hero, drame, solution, transparence) | Fait (18/06/2026) |
+| Navigation par onglets + layout projection paysage | Fait (18/06/2026) |
+| Service de mise en relation joué en fin de vocal (DILA, mail/téléphone, consentement) | Fait (18/06/2026) |
+| ADR-0004 LLM souverain + évolution prompt mise en relation | Fait (18/06/2026) |
 | Repo GitHub + premier commit + push | Fait (17/06/2026) |
-| Déploiement Cloudflare Pages (auto sur push `main`) | Connexion CF à faire une fois (voir doc) |
+| Déploiement Cloudflare Pages (auto sur push `main`) | Fait, en ligne (17/06/2026). Redéploiement automatique à chaque push |
 | ADR (0001 cible/démonstrateur en priorité) | À faire |
 | Parcours utilisateur senior complet (couverture des 15 questions) | En cours de cadrage |
 

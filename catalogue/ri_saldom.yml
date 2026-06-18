@@ -1,0 +1,68 @@
+# Fiche aide — Réduction d'impôt pour l'emploi d'un salarié à domicile
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: ri_saldom
+  description: >
+    Déclencher pour clarifier réduction vs crédit d'impôt sur l'emploi d'un salarié à domicile.
+    Depuis 2017, l'avantage est un crédit d'impôt pour TOUS ; la « réduction » ne subsiste
+    que dans des cas particuliers (ex. dépenses engagées chez un ascendant bénéficiaire de l'APA).
+    Mots-clés : réduction d'impôt, salarié à domicile, services à la personne, ascendant,
+    différence crédit réduction, non imposable.
+  domaine: Fiscal
+  certitude: auto
+
+id: ri_saldom
+libelle: "Réduction d'impôt pour l'emploi d'un salarié à domicile"
+gestionnaire: fiscal
+fiabilite: barème_national_calcule
+statut: actif
+
+resume_falc: >
+  Avant, l'aide pour l'emploi d'un salarié à domicile pouvait être une « réduction d'impôt ».
+  Depuis 2017, c'est devenu un crédit d'impôt pour tout le monde (voir la fiche ci_saldom).
+  La différence est importante :
+  - Le crédit d'impôt est remboursé, même si vous ne payez pas d'impôts.
+  - La réduction d'impôt n'est pas remboursée : si elle est plus grande que votre impôt, vous perdez le reste.
+  La forme « réduction » ne reste utile que dans des cas particuliers.
+
+conditions:
+  - "Même base que le crédit d'impôt : 50 % des dépenses, plafond de 12 000 € par an (avec majorations possibles)."
+  - "Depuis l'imposition des revenus 2017, l'avantage est un crédit d'impôt généralisé à tous les foyers (actifs comme retraités)."
+  - "La « réduction d'impôt » subsiste surtout pour des situations spécifiques (par exemple dépenses payées au domicile d'un ascendant bénéficiaire de l'APA). # cas exacts à confirmer sur F12 / CGI 199 sexdecies"
+
+requires:
+  - champ: depenses_salarie_domicile
+    question_falc: "Combien avez-vous payé dans l'année pour le salarié à domicile (après déduction des aides reçues) ?"
+    type: montant_annuel
+  - champ: depenses_chez_ascendant
+    question_falc: "Ces dépenses concernent-elles le domicile d'un parent âgé (ascendant) ?"
+    type: booleen
+
+openfisca:
+  sortie: ri_saldom
+  eligibilite: null
+  base_ressources: null
+  entrees: [depenses_salarie_domicile, age, parente_age]
+
+demarche:
+  ou: "Auprès de l'administration fiscale (impots.gouv.fr), au moment de la déclaration de revenus."
+  comment: >
+    Indiquez vos dépenses dans la déclaration de revenus, dans la case correspondant
+    à l'emploi d'un salarié à domicile. L'administration applique automatiquement
+    la forme adaptée (crédit d'impôt dans la grande majorité des cas, réduction dans les cas particuliers).
+  resolution_guichet: "Service des impôts des particuliers (SIP), impots.gouv.fr."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F12"
+
+avertissements:
+  - "Dans la plupart des cas, c'est désormais un CRÉDIT d'impôt (remboursable) et non une réduction : voir la fiche ci_saldom."
+  - "Réduction d'impôt = non remboursable : l'excédent au-delà de l'impôt dû est perdu, ce qui pénalisait surtout les retraités et personnes modestes avant 2017."
+  - "Ne pas cumuler à tort réduction et crédit d'impôt sur les mêmes dépenses : un même euro de dépense ouvre un seul avantage."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F12 « Crédit d'impôt pour l'emploi d'un salarié à domicile » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "economie.gouv.fr « Tout savoir sur le crédit d'impôt lié à l'emploi d'un salarié à domicile » — généralisation 2017 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "Code général des impôts, article 199 sexdecies (Légifrance) (consulté 17/06/2026)"

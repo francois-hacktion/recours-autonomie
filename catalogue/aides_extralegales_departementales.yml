@@ -1,0 +1,80 @@
+# Fiche aide — Aides extralégales (facultatives) des départements
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: aides_extralegales_departementales
+  description: >
+    Déclencher quand une personne âgée a un besoin local (transport, adaptation du
+    logement, téléassistance, hébergement temporaire, accueil de jour, aides techniques)
+    qui n'est pas couvert par les aides légales nationales, et qu'on cherche une aide
+    départementale facultative. Mots-clés : aide extralégale, aide facultative département,
+    conseil départemental, règlement départemental d'aide sociale, aide locale senior,
+    aide hors APA, secours département.
+  domaine: Local
+  certitude: non_centralise
+
+id: aides_extralegales_departementales
+libelle: "Aides extralégales (facultatives) des conseils départementaux"
+gestionnaire: departemental
+fiabilite: non_centralise
+
+resume_falc: >
+  En plus des aides obligatoires prévues par la loi (comme l'APA ou l'ASH), chaque
+  conseil départemental peut créer ses propres aides facultatives, appelées "aides
+  extralégales". Le département est libre de les proposer ou non, et d'en fixer les
+  conditions (âge, revenus, situation).
+  Ces aides changent d'un département à l'autre. Souvent on y trouve : la téléassistance,
+  l'adaptation du logement, l'achat d'aides techniques, des aides au transport, à
+  l'hébergement temporaire ou à l'accueil de jour.
+  Comme ces aides ne sont pas les mêmes partout, on ne peut pas les calculer au niveau
+  national. Pour savoir ce qui existe, il faut se renseigner directement auprès du
+  conseil départemental du lieu où vit la personne.
+
+conditions:
+  - "Conditions définies au cas par cas par chaque conseil départemental dans son règlement départemental d'aide sociale."
+  - "Souvent soumises à une condition d'âge et de revenus."
+  - "Résider dans le département concerné."
+  - "Une aide extralégale doit être inscrite dans le règlement départemental d'aide sociale pour exister (elle ne peut pas reposer sur une simple décision ponctuelle)."
+
+requires:
+  - champ: departement_residence
+    question_falc: "Dans quel département vit la personne âgée ?"
+    type: texte
+  - champ: besoin_principal
+    question_falc: "Quel est le besoin principal ? (transport, adaptation du logement, téléassistance, hébergement temporaire, accueil de jour, aide technique...)"
+    type: enum
+  - champ: revenus_mensuels
+    question_falc: "Quel est le montant total des revenus chaque mois ?"
+    type: montant_mensuel
+
+openfisca: null   # Aides facultatives propres à chaque département, non centralisées : aucun calcul national possible.
+
+demarche:
+  ou: "Auprès du conseil départemental du lieu de résidence (direction de l'autonomie / des solidarités) ou du point d'information local (CLIC, Maison départementale de l'autonomie)."
+  comment: >
+    Demander au conseil départemental son règlement départemental d'aide sociale et la
+    liste des aides facultatives proposées aux personnes âgées. On peut aussi passer par
+    un point d'information local (CLIC, Maison départementale de l'autonomie, CCAS) qui
+    oriente vers les bons dispositifs et aide à constituer le dossier.
+  resolution_guichet: >
+    Étape 1 : identifier le département de résidence de la personne. Étape 2 : contacter
+    le conseil départemental de ce département (site internet du département, rubrique
+    "personnes âgées" ou "autonomie", ou accueil téléphonique des solidarités). Étape 3 :
+    si besoin d'aide pour s'y retrouver, passer par un point local d'information et de
+    coordination (CLIC) ou le CCAS de la commune. Demander explicitement les "aides
+    extralégales" ou "aides facultatives" du règlement départemental d'aide sociale.
+    L'annuaire des points d'information est disponible sur le portail national
+    pour-les-personnes-agees.gouv.fr.
+  lien_fiche: "https://www.pour-les-personnes-agees.gouv.fr/vivre-a-domicile/aides-financieres/les-aides-extralegales-des-mairies-ou-des-conseils-departementaux"
+
+avertissements:
+  - "Aides non centralisées : elles varient totalement d'un département à l'autre. Impossible de dire à l'avance ce qui existe ni de calculer un montant au niveau national. Toujours orienter vers le guichet local (conseil départemental)."
+  - "Ces aides sont facultatives : un département peut ne proposer aucune aide extralégale."
+  - "Ne pas confondre avec l'APA et l'ASH, qui sont des aides légales obligatoires (fiches dédiées)."
+  - "Les conditions (âge, revenus, plafonds) sont fixées par chaque département : ne jamais annoncer de montant ou de critère national."
+
+sources:
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr — Les aides extralégales des mairies ou des conseils départementaux (consulté 17/06/2026) — https://www.pour-les-personnes-agees.gouv.fr/vivre-a-domicile/aides-financieres/les-aides-extralegales-des-mairies-ou-des-conseils-departementaux"
+  - niveau: institution
+    ref: "DREES — L'aide sociale extralégale ou facultative des départements (étude, consulté 17/06/2026) — https://www.drees.solidarites-sante.gouv.fr/publications/etudes-et-resultats/laide-sociale-extralegale-ou-facultative-des-departements"

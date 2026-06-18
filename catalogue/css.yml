@@ -1,0 +1,71 @@
+# Fiche aide — Complémentaire santé solidaire (CSS)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: css
+  description: >
+    Déclencher pour une personne âgée à revenus modestes qui a besoin d'aide
+    pour payer une mutuelle / complémentaire santé, ou qui n'a pas de mutuelle.
+    Mots-clés : complémentaire santé solidaire, CSS, C2S, ex-CMU-C, ex-ACS,
+    mutuelle gratuite, mutuelle pas chère, reste à charge soins, frais de santé.
+  domaine: Santé
+  certitude: auto
+
+id: css
+libelle: "Complémentaire santé solidaire (CSS / C2S)"
+gestionnaire: assurance_maladie
+fiabilite: barème_national_calcule
+statut: actif
+
+resume_falc: >
+  La Complémentaire santé solidaire est une aide pour payer vos frais de santé.
+  Elle remplace la mutuelle quand vous avez de petits revenus.
+  Avec elle, vous ne payez presque rien chez le médecin, à l'hôpital,
+  pour les médicaments, les lunettes ou les dents.
+  Selon vos revenus, elle est gratuite, ou bien vous payez moins de 1 euro par jour.
+  Vous n'avancez pas l'argent des soins.
+
+conditions:
+  - "Vivre en France de façon stable et régulière (depuis plus de 3 mois)."
+  - "Avoir des revenus en dessous d'un plafond, calculé sur les 12 derniers mois."
+  - "Plafond 2026 pour 1 personne seule (métropole) : environ 10 421 € par an pour la CSS gratuite ; entre ce montant et environ 14 069 € par an pour la CSS avec participation. # plafonds revalorisés au 1er avril 2026, montants exacts à confirmer sur F10027"
+  - "Le calcul prend en compte tous les revenus du foyer (retraites, salaires, aides, etc.)."
+
+requires:
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: revenus_12_mois
+    question_falc: "Combien d'argent avez-vous reçu en tout sur les 12 derniers mois (retraites, salaires, aides) ?"
+    type: montant_annuel
+  - champ: composition_foyer
+    question_falc: "Vivez-vous seul(e), en couple, ou avec d'autres personnes à charge ?"
+    type: enum
+
+openfisca:
+  sortie: css
+  eligibilite: css_eligibilite
+  base_ressources: css_base_ressources
+  entrees: [date_naissance, revenus, composition_familiale, residence]
+
+demarche:
+  ou: "Auprès de votre caisse d'Assurance Maladie (CPAM) ou de la MSA si vous êtes affilié au régime agricole."
+  comment: >
+    Faites la demande en ligne depuis votre compte ameli (ou votre espace MSA),
+    ou envoyez le formulaire papier de demande à votre caisse avec les justificatifs.
+    Vous pouvez tester votre droit avec le simulateur officiel sur ameli.fr.
+  resolution_guichet: "CPAM (Assurance Maladie) ou MSA. Possibilité de se faire aider par une assistante sociale ou un point France Services."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F10027"
+
+avertissements:
+  - "La CSS a remplacé la CMU-C et l'ACS depuis le 1er novembre 2019. Si on vous parle encore d'ACS ou de CMU-C, c'est désormais la CSS."
+  - "Les plafonds de ressources sont revalorisés chaque année au 1er avril : vérifiez les montants exacts de l'année en cours."
+  - "Le droit est ouvert pour 1 an et doit être renouvelé (sauf cas de renouvellement automatique, par exemple pour certains bénéficiaires de minima sociaux)."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F10027 « Complémentaire santé solidaire (ex-CMU-C) » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "ameli.fr « Qui peut bénéficier de la Complémentaire santé solidaire ? » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "service-public.gouv.fr actualité A17326 « Complémentaire santé solidaire : les plafonds de ressources évoluent » — revalorisation 1er avril 2026 (consulté 17/06/2026)"

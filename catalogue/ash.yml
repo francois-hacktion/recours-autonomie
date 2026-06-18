@@ -1,0 +1,96 @@
+# Fiche aide — ASH (Aide sociale à l'hébergement)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: ash
+  description: >
+    Déclencher quand une personne âgée ne peut pas payer ses frais d'hébergement
+    en EHPAD, maison de retraite, résidence autonomie (foyer-logement) ou USLD,
+    ou en accueil familial. Mots-clés : ASH, aide sociale hébergement, EHPAD trop cher,
+    frais maison de retraite, payer l'EHPAD, reste à charge hébergement, obligés alimentaires,
+    établissement habilité aide sociale.
+  domaine: Hébergement
+  certitude: cas_par_cas
+
+id: ash
+libelle: "ASH — Aide sociale à l'hébergement d'une personne âgée"
+gestionnaire: departemental
+fiabilite: cas_par_cas
+
+resume_falc: >
+  L'ASH aide à payer les frais d'hébergement (le "gîte et le couvert") d'une personne
+  âgée qui vit en EHPAD, en maison de retraite, en résidence autonomie ou en accueil
+  familial, quand ses revenus ne suffisent pas.
+  C'est le département qui verse cette aide. Pour en avoir le droit, l'établissement
+  doit être "habilité à l'aide sociale". La personne âgée doit avoir au moins 65 ans
+  (ou 60 ans si elle est reconnue inapte au travail).
+  Attention : la personne aidée reverse 90 % de ses revenus à l'établissement et garde
+  10 % pour elle (avec un minimum laissé à disposition fixé par la loi).
+  Deux points importants à connaître avant de demander :
+  - Le département peut demander une participation aux "obligés alimentaires"
+    (les enfants, les gendres et belles-filles). Depuis 2024, les petits-enfants
+    ne sont plus sollicités.
+  - L'aide est récupérable : le département peut se rembourser plus tard sur la
+    succession de la personne (sur la part qui dépasse un certain seuil) et auprès
+    des obligés alimentaires.
+
+conditions:
+  - "Être âgé d'au moins 65 ans (ou 60 ans en cas d'inaptitude au travail reconnue)."
+  - "Vivre dans un établissement habilité à l'aide sociale (EHPAD, résidence autonomie, USLD) ou en accueil familial agréé."
+  - "Avoir des revenus inférieurs au montant des frais d'hébergement facturés."
+  - "Résider en France de façon stable et régulière."
+  - "La demande doit être faite dans les 2 mois suivant l'entrée pour une prise en charge dès la date d'entrée."
+
+requires:
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: etablissement_habilite_aide_sociale
+    question_falc: "Votre établissement (ou place) est-il habilité à l'aide sociale ? (à demander à l'établissement)"
+    type: booleen
+  - champ: type_hebergement
+    question_falc: "Où vivez-vous ? (EHPAD, résidence autonomie / foyer-logement, USLD, accueil familial)"
+    type: enum
+  - champ: revenus_mensuels
+    question_falc: "Quel est le montant total de vos revenus chaque mois ?"
+    type: montant_mensuel
+  - champ: frais_hebergement_mensuels
+    question_falc: "Combien coûte votre hébergement chaque mois (tarif hébergement de l'établissement) ?"
+    type: montant_mensuel
+  - champ: a_des_enfants
+    question_falc: "Avez-vous des enfants, gendres ou belles-filles ? (obligés alimentaires)"
+    type: booleen
+
+openfisca: null   # Barèmes et participation fixés par chaque département (règlement départemental d'aide sociale) ; pas de calcul national fiable.
+
+demarche:
+  ou: "Auprès du CCAS ou de la mairie du domicile de la personne âgée, qui transmet le dossier au conseil départemental."
+  comment: >
+    Retirer le formulaire de demande d'aide sociale au CCAS ou à la mairie, le remplir
+    et joindre les justificatifs (revenus, patrimoine, situation familiale, frais de
+    l'établissement). Le dossier est instruit par le conseil départemental, qui décide
+    et fixe la participation de la personne et, le cas échéant, des obligés alimentaires.
+    Faire la demande dans les 2 mois suivant l'entrée pour une prise en charge rétroactive.
+  resolution_guichet: >
+    Le bon guichet est le CCAS ou la mairie de la commune où réside la personne âgée.
+    Si la personne est déjà en établissement, le service social de l'EHPAD ou de la
+    résidence aide à monter le dossier. Vérifier en amont auprès de l'établissement
+    qu'il dispose bien de places habilitées à l'aide sociale : sans cela, l'ASH ne
+    peut pas être accordée. Pour les règles précises (seuils, participation des obligés
+    alimentaires), se référer au règlement départemental d'aide sociale du département concerné.
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F2444"
+
+avertissements:
+  - "Aide récupérable sur la succession de la personne aidée : le département peut se rembourser sur la part de l'actif net successoral qui dépasse le seuil légal (46 000 € au niveau national en 2026, à confirmer selon le département), dans la limite des sommes versées et dans un délai de 5 ans après connaissance de la succession."
+  - "Le département peut demander une participation financière aux obligés alimentaires (enfants, gendres, belles-filles). Depuis 2024, les petits-enfants ne sont plus sollicités."
+  - "L'établissement ou la place doit être habilité à l'aide sociale, sinon pas d'ASH. À vérifier impérativement avant l'entrée."
+  - "La personne aidée reverse 90 % de ses revenus à l'établissement et conserve au moins 10 % (montant minimum laissé à disposition fixé chaque année)."
+  - "Les montants, seuils et la participation des obligés alimentaires varient selon le règlement départemental d'aide sociale : décision au cas par cas du conseil départemental. Ne pas annoncer de montant national définitif."
+
+sources:
+  - niveau: institution
+    ref: "service-public.gouv.fr fiche F2444 — Aide sociale à l'hébergement (ASH) d'une personne âgée (consulté 17/06/2026) — https://www.service-public.gouv.fr/particuliers/vosdroits/F2444"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr — L'aide sociale à l'hébergement (ASH) en établissement (consulté 17/06/2026) — https://www.pour-les-personnes-agees.gouv.fr/vivre-dans-un-ehpad/aides-financieres-en-ehpad/l-aide-sociale-a-l-hebergement-ash-en-etablissement"
+  - niveau: institution
+    ref: "solidarites.gouv.fr — Aide sociale à l'hébergement (ASH) (consulté 17/06/2026) — https://solidarites.gouv.fr/aide-sociale-lhebergement-ash"

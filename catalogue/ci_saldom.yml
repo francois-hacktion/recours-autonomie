@@ -1,0 +1,74 @@
+# Fiche aide — Crédit d'impôt pour l'emploi d'un salarié à domicile
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: ci_saldom
+  description: >
+    Déclencher pour une personne qui paie une aide à domicile, une auxiliaire de vie,
+    une aide-ménagère, une garde-malade (hors soins), ou qui passe par un service
+    d'aide à la personne (mandataire, prestataire, CESU).
+    Mots-clés : crédit d'impôt, aide à domicile, salarié à domicile, services à la personne,
+    CESU, auxiliaire de vie, aide-ménagère, ménage, garde-malade, avance immédiate.
+  domaine: Fiscal
+  certitude: auto
+
+id: ci_saldom
+libelle: "Crédit d'impôt pour l'emploi d'un salarié à domicile (services à la personne)"
+gestionnaire: fiscal
+fiabilite: barème_national_calcule
+statut: actif
+
+resume_falc: >
+  Quand vous payez quelqu'un pour vous aider à la maison (ménage, aide à la toilette,
+  garde-malade, etc.), l'État vous rend la moitié de ce que vous avez dépensé.
+  C'est un crédit d'impôt de 50 %.
+  Vous y avez droit même si vous ne payez pas d'impôts : on vous rembourse alors la somme.
+  Les dépenses comptent jusqu'à 12 000 € par an (ce plafond peut être plus élevé selon votre situation).
+
+conditions:
+  - "Employer un salarié à domicile (directement, en CESU, ou via un service à la personne) pour des tâches à votre résidence en France."
+  - "Crédit d'impôt égal à 50 % des dépenses effectivement payées dans l'année."
+  - "Plafond de dépenses : 12 000 € par an (revenus 2025, déclaration 2026)."
+  - "Plafond majoré de 1 500 € par personne du foyer de plus de 65 ans et par ascendant de plus de 65 ans bénéficiaire de l'APA, dans la limite globale de 15 000 € (ou 18 000 € la 1re année). # majorations à confirmer sur F12"
+  - "Plafond porté de 12 000 € à 15 000 € la première année d'emploi d'un salarié à domicile."
+
+requires:
+  - champ: depenses_salarie_domicile
+    question_falc: "Combien avez-vous payé dans l'année pour votre aide à domicile (après déduction des aides reçues comme l'APA) ?"
+    type: montant_annuel
+  - champ: age_plus_65
+    question_falc: "Une personne du foyer a-t-elle plus de 65 ans ?"
+    type: booleen
+  - champ: premiere_annee_emploi
+    question_falc: "Est-ce la première année où vous employez un salarié à domicile ?"
+    type: booleen
+
+openfisca:
+  sortie: ci_saldom
+  eligibilite: null
+  base_ressources: null
+  entrees: [depenses_salarie_domicile, age, nbptr, parente_age]
+
+demarche:
+  ou: "Auprès de l'administration fiscale (impots.gouv.fr), au moment de la déclaration de revenus."
+  comment: >
+    Indiquez le montant payé dans votre déclaration de revenus (case dédiée à l'emploi
+    d'un salarié à domicile / services à la personne).
+    Un acompte de 60 % est versé en janvier, le solde à l'été selon vos dépenses réelles.
+    Vous pouvez aussi utiliser l'« avance immédiate » (rubrique « Mon avantage fiscal »
+    sur cesu.urssaf.fr) : les 50 % sont déduits directement du coût du salarié.
+  resolution_guichet: "Service des impôts des particuliers (SIP), impots.gouv.fr, ou Urssaf/CESU pour l'avance immédiate."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F12"
+
+avertissements:
+  - "Déduisez d'abord les aides reçues (APA, aide de la caisse de retraite, etc.) : le crédit d'impôt ne porte que sur le reste à votre charge."
+  - "C'est un crédit d'impôt : il est remboursé même si vous n'êtes pas imposable."
+  - "Plafonds et majorations sont fixés chaque année par la loi de finances : vérifier les montants exacts de l'année de déclaration."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F12 « Crédit d'impôt pour l'emploi d'un salarié à domicile » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "impots.gouv.fr « Comment bénéficier du crédit d'impôt pour l'emploi d'un salarié à domicile ? » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "Code général des impôts, article 199 sexdecies (Légifrance) (consulté 17/06/2026)"

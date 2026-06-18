@@ -1,0 +1,76 @@
+# Fiche aide — PCH (prestation de compensation du handicap) après 60 ans
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: pch
+  description: >
+    Déclencher pour une personne de 60 ans ou plus en situation de handicap qui
+    remplissait déjà les conditions de la PCH avant 60 ans, OU qui continue d'exercer
+    une activité professionnelle. La PCH compense les conséquences du handicap
+    (aide humaine, aides techniques, aménagement du logement ou du véhicule).
+    Mots-clés : PCH, prestation compensation handicap, MDPH, aide humaine, aide technique,
+    handicap après 60 ans, barrière des 60 ans.
+  domaine: Dépendance
+  certitude: evaluation
+
+id: pch
+libelle: "Prestation de compensation du handicap (PCH)"
+gestionnaire: departemental
+fiabilite: soumis_evaluation
+
+resume_falc: >
+  La PCH est une aide qui paie des dépenses liées à votre handicap : une personne pour vous aider,
+  du matériel (fauteuil, lit médicalisé), des travaux pour adapter votre logement ou votre voiture.
+  En principe, il faut avoir moins de 60 ans pour demander la PCH.
+  Mais après 60 ans, vous pouvez quand même la demander, sans limite d'âge, dans 2 cas :
+  - si vous remplissiez déjà les conditions de la PCH AVANT vos 60 ans ;
+  - ou si vous continuez à travailler (activité professionnelle).
+  C'est la MDPH (Maison départementale des personnes handicapées) qui étudie votre demande.
+  Une équipe évalue votre situation : ce n'est pas un calcul automatique.
+
+conditions:
+  - "Avoir une difficulté absolue pour faire une activité importante du quotidien (par exemple se laver), OU une difficulté grave pour au moins 2 activités importantes (par exemple se laver et marcher)."
+  - "Vivre en France de façon stable et régulière."
+  - "RÈGLE D'ÂGE : avoir moins de 60 ans à la première demande. APRÈS 60 ANS, la PCH reste possible sans limite d'âge SI vous remplissiez déjà les conditions avant 60 ans, OU si vous continuez d'exercer une activité professionnelle."
+  - "La PCH est attribuée sans condition de ressources, mais les ressources fixent le taux de prise en charge (100 % ou 80 %)."
+
+requires:
+  - champ: age
+    question_falc: "Quel âge avez-vous ?"
+    type: date
+  - champ: conditions_remplies_avant_60_ans
+    question_falc: "Aviez-vous déjà ces difficultés (le handicap) AVANT vos 60 ans ?"
+    type: booleen
+  - champ: activite_professionnelle
+    question_falc: "Travaillez-vous encore aujourd'hui (activité professionnelle) ?"
+    type: booleen
+  - champ: difficulte_activites_quotidien
+    question_falc: "Avez-vous une difficulté absolue pour 1 activité du quotidien, ou une difficulté grave pour au moins 2 activités ?"
+    type: enum
+
+openfisca:
+  sortie: pch
+  eligibilite: pch_eligibilite
+  entrees: [age, pch_condition_avant_60_ans, pch_activite_professionnelle, pch_difficulte]
+
+demarche:
+  ou: "À la MDPH (Maison départementale des personnes handicapées) de votre département."
+  comment: >
+    Vous remplissez le formulaire de demande à la MDPH (cerfa de demande MDPH),
+    avec un certificat médical récent. Une équipe pluridisciplinaire évalue vos besoins
+    et propose un plan personnalisé de compensation. La CDAPH décide.
+  resolution_guichet: >
+    La MDPH est le bon guichet (et non le service APA du département).
+    Si la personne a plus de 60 ans et n'entre dans aucune des 2 exceptions,
+    l'orienter vers l'APA.
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F14202"
+
+avertissements:
+  - "POINT CLÉ ÂGE : après 60 ans, la PCH n'est ouverte que si la personne remplissait déjà les conditions avant 60 ans, OU si elle continue une activité professionnelle. Sinon, c'est l'APA qui s'applique."
+  - "On ne peut pas cumuler PCH et APA pour le même besoin : il faut choisir (droit d'option)."
+  - "Prise en charge à 100 % du tarif si ressources annuelles ≤ 30 398,54 €, sinon 80 %. # à vérifier 2026"
+  - "L'attribution dépend d'une évaluation individuelle par l'équipe de la MDPH : le moteur ne peut pas garantir le montant."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F14202 « Prestation de compensation du handicap (PCH) » (consulté 17/06/2026)"

@@ -1,0 +1,45 @@
+# Fiche variable d'évaluation — Tarif dépendance en établissement (tarif GIR de l'EHPAD)
+
+skill:
+  name: dependance_tarif_etablissement
+  description: >
+    Variable d'évaluation, pas une aide. Déclencher quand le moteur a besoin de connaître
+    le tarif dépendance de l'établissement (EHPAD / USLD) pour le GIR de la personne,
+    afin de calculer l'APA en établissement.
+    Mots-clés : tarif dépendance, tarif GIR, EHPAD, USLD, ticket modérateur, facture EHPAD,
+    GIR 1-2, GIR 3-4, GIR 5-6.
+  domaine: Dépendance
+  certitude: evaluation
+
+id: dependance_tarif_etablissement
+libelle: "Tarif dépendance en établissement (tarif GIR de l'EHPAD)"
+type: variable_evaluation
+gestionnaire: departemental
+
+resume_falc: >
+  Le tarif dépendance, c'est ce que l'établissement (EHPAD ou USLD) fait payer pour vous aider
+  chaque jour : se lever, se laver, manger, se déplacer.
+  Dans chaque établissement, il y a 3 tarifs dépendance, selon le niveau de dépendance :
+  un pour les GIR 1-2, un pour les GIR 3-4, un pour les GIR 5-6.
+  Ces tarifs sont fixés chaque année par le conseil départemental.
+  L'APA en établissement sert à payer une partie de ce tarif.
+  Ce tarif n'est pas calculé par le moteur : il dépend de l'établissement et du département.
+
+explication:
+  qui_evalue: "Le conseil départemental fixe chaque année les 3 tarifs dépendance de chaque établissement. Le médecin coordonnateur de l'établissement évalue le GIR du résident."
+  comment_obtenu: "Le tarif figure dans le contrat de séjour et sur la facture de l'établissement. Le tarif appliqué dépend du GIR du résident (GIR 1-2, 3-4 ou 5-6)."
+  echelle: "3 niveaux : tarif GIR 1-2 (le plus élevé), tarif GIR 3-4, tarif GIR 5-6 (le plus bas, qui reste toujours à la charge du résident à titre de ticket modérateur)."
+
+openfisca:
+  variable: apa_etablissement_tarif_dependance
+
+avertissements:
+  - "Cette donnée est fixée par le conseil départemental et l'établissement, pas calculée par le moteur."
+  - "Le tarif GIR 5-6 reste toujours à la charge du résident (ticket modérateur), même quand l'APA est versée."
+  - "Si les revenus du résident sont inférieurs au seuil fixé chaque année (2 846,77 € par mois en 2026 — # à vérifier 2026), il ne paie que le tarif GIR 5-6 et l'APA paie la différence."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F10009 / sous-fiche F35136 « APA - En établissement » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr - « L'APA en établissement » (consulté 17/06/2026)"

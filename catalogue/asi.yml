@@ -1,0 +1,74 @@
+# Fiche aide — ASI (Allocation supplémentaire d'invalidité)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: asi
+  description: >
+    Déclencher pour une personne invalide n'ayant pas encore l'âge de l'Aspa
+    (avant l'âge légal de la retraite), titulaire d'une pension d'invalidité
+    ou de retraite pour inaptitude, aux ressources modestes.
+    Mots-clés : ASI, allocation supplémentaire invalidité, pension d'invalidité,
+    complément invalidité, ressources faibles, avant 65 ans, inaptitude.
+  domaine: Ressources
+  certitude: auto
+
+id: asi
+libelle: "Allocation supplémentaire d'invalidité (Asi)"
+gestionnaire: caisse_retraite
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'Asi est une aide versée chaque mois aux personnes invalides qui ont de
+  petits revenus et qui n'ont pas encore l'âge pour toucher l'Aspa. Elle
+  complète vos revenus jusqu'à un minimum. Il faut déjà recevoir une pension
+  d'invalidité ou de retraite.
+
+conditions:
+  - "Être titulaire d'une pension d'invalidité, d'une pension de retraite pour inaptitude, ou d'une pension de réversion ouvrant droit"
+  - "Ne pas avoir atteint l'âge requis pour l'Aspa (après cet âge, c'est l'Aspa qui prend le relais)"
+  - "Résider de façon permanente en France (plus de 6 mois, soit au moins 181 jours par an)"
+  - "Avoir des ressources inférieures au plafond : 922,16 €/mois pour une personne seule, 1 613,80 €/mois pour un couple (au 01/04/2026)"  # à reconfirmer chaque année
+
+requires:
+  - champ: titulaire_pension_invalidite
+    question_falc: "Recevez-vous déjà une pension d'invalidité ou une pension de retraite ?"
+    type: booleen
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: ressources_mensuelles
+    question_falc: "Combien d'argent recevez-vous chaque mois (pension, revenus) ?"
+    type: montant_mensuel
+    si_inconnu: estimer
+  - champ: situation_familiale
+    question_falc: "Vivez-vous seul(e) ou en couple ?"
+    type: enum
+  - champ: reside_france
+    question_falc: "Vivez-vous en France plus de 6 mois par an ?"
+    type: booleen
+
+openfisca:
+  sortie: asi
+  eligibilite: asi_eligibilite
+  base_ressources: asi_aspa_base_ressources
+  entrees: [date_naissance, pensions_invalidite, asi_aspa_base_ressources_individuelle]
+
+demarche:
+  ou: "Auprès de l'organisme qui verse votre pension d'invalidité ou de retraite (Assurance maladie / CPAM, Carsat, MSA selon votre régime)."
+  comment: "Remplir le formulaire de demande d'Asi (formulaire dédié, ex. Cerfa MSA réf. 10986) et le renvoyer à votre caisse avec les justificatifs de ressources."
+  resolution_guichet: "Assurance maladie (ameli) ou Assurance retraite au 39 60 ; MSA selon votre régime."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F16940"
+
+avertissements:
+  - "L'Asi est différentielle : elle complète vos ressources jusqu'au plafond, elle n'est pas forfaitaire."
+  - "L'Asi n'est pas récupérable sur la succession (contrairement à l'Aspa)."
+  - "À l'âge de l'Aspa, l'Asi cesse et il faut basculer vers l'Aspa."
+  - "Plafonds 2026 revalorisés au 1er avril ; à reconfirmer chaque année."  # à vérifier 2026
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F16940 « Allocation supplémentaire d'invalidité (Asi) » (vérifiée le 17/06/2026 ; fiche mise à jour 01/04/2026)"
+  - niveau: institution
+    ref: "service-public.fr / DILA — plafonds au 01/04/2026 : 922,16 €/mois personne seule, 1 613,80 €/mois couple"
+  - niveau: institution
+    ref: "ameli.fr — conditions ASI (titulaire pension d'invalidité, résidence en France 181 j/an)"

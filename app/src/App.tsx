@@ -1,23 +1,24 @@
 import { useState } from 'react'
-import { ArrowLeft, ShieldCheck } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 import { DemoBanner } from '@/components/DemoBanner'
 import { Accueil } from '@/screens/Accueil'
 import { ParcoursAssure } from '@/screens/ParcoursAssure'
 import { EspaceAidant } from '@/screens/EspaceAidant'
 import { AssistantVocal } from '@/screens/AssistantVocal'
 import { Labyrinthe } from '@/screens/Labyrinthe'
+import { cn } from '@/lib/cn'
 import type { Vue } from '@/lib/vue'
 
-// Coquille de l'application : navigation par état en mémoire, pas de routing serveur.
-// Un seul index.html, ouvrable en double-clic.
+// Coquille de l'application : navigation par onglets, état en mémoire, pas de routing.
+// Un seul index.html. Onglets ordonnés pour la présentation, la démo vocale en tête.
 
-const TITRES: Record<Vue, string> = {
-  accueil: 'Vos aides à l’autonomie, simplement',
-  assure: 'Parcours guidé',
-  aidant: 'Espace aidant',
-  vocal: 'Assistant vocal',
-  labyrinthe: 'Le labyrinthe des aides',
-}
+const ONGLETS: { vue: Vue; label: string }[] = [
+  { vue: 'accueil', label: 'Accueil' },
+  { vue: 'labyrinthe', label: 'Le problème' },
+  { vue: 'vocal', label: 'Assistant vocal' },
+  { vue: 'aidant', label: 'Espace aidant' },
+  { vue: 'assure', label: 'Parcours guidé' },
+]
 
 export default function App() {
   const [vue, setVue] = useState<Vue>('accueil')
@@ -25,8 +26,8 @@ export default function App() {
   return (
     <div className="flex min-h-screen flex-col">
       <DemoBanner />
-      <Header vue={vue} onAccueil={() => setVue('accueil')} />
-      <main className="flex-1 px-4 py-8 sm:py-12">
+      <Header vue={vue} onNavigate={setVue} />
+      <main className="flex-1 px-4 py-6 sm:py-8">
         {vue === 'accueil' && <Accueil onNavigate={setVue} />}
         {vue === 'assure' && <ParcoursAssure />}
         {vue === 'aidant' && <EspaceAidant />}
@@ -38,35 +39,46 @@ export default function App() {
   )
 }
 
-function Header({ vue, onAccueil }: { vue: Vue; onAccueil: () => void }) {
+function Header({ vue, onNavigate }: { vue: Vue; onNavigate: (vue: Vue) => void }) {
   return (
-    <header className="border-b border-etat-border bg-white">
-      <div className="mx-auto flex max-w-4xl items-center gap-3 px-4 py-4">
+    <header className="sticky top-0 z-20 border-b border-etat-border bg-white/95 backdrop-blur">
+      <div className="mx-auto flex max-w-projection flex-wrap items-center gap-x-4 px-4">
         <button
           type="button"
-          onClick={onAccueil}
-          className="flex items-center gap-3 text-left"
+          onClick={() => onNavigate('accueil')}
+          className="flex items-center gap-2.5 py-3 text-left"
           aria-label="Revenir à l’accueil"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded bg-etat-blue text-white">
-            <ShieldCheck size={22} aria-hidden />
+          <span className="flex h-9 w-9 items-center justify-center rounded bg-etat-blue text-white">
+            <ShieldCheck size={20} aria-hidden />
           </span>
-          <span className="leading-tight">
-            <span className="block text-base font-bold text-etat-ink">Recours Autonomie</span>
-            <span className="block text-sm text-etat-grey">{TITRES[vue]}</span>
-          </span>
+          <span className="text-base font-bold text-etat-ink">Recours Autonomie</span>
         </button>
 
-        {vue !== 'accueil' && (
-          <button
-            type="button"
-            onClick={onAccueil}
-            className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-etat-border px-3 py-2 text-sm font-semibold text-etat-blue transition-colors hover:bg-etat-blue-light"
-          >
-            <ArrowLeft size={16} aria-hidden />
-            Accueil
-          </button>
-        )}
+        <nav
+          className="flex flex-1 items-center gap-1 overflow-x-auto"
+          aria-label="Navigation principale"
+        >
+          {ONGLETS.map((o) => {
+            const actif = vue === o.vue
+            return (
+              <button
+                key={o.vue}
+                type="button"
+                onClick={() => onNavigate(o.vue)}
+                aria-current={actif ? 'page' : undefined}
+                className={cn(
+                  'whitespace-nowrap border-b-2 px-3 py-3 text-sm font-semibold transition-colors sm:text-base',
+                  actif
+                    ? 'border-etat-blue text-etat-blue'
+                    : 'border-transparent text-etat-grey hover:border-etat-border hover:text-etat-blue',
+                )}
+              >
+                {o.label}
+              </button>
+            )
+          })}
+        </nav>
       </div>
     </header>
   )

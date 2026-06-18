@@ -1,0 +1,84 @@
+# Fiche aide — Action sociale des caisses de retraite complémentaire (Agirc-Arrco)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: action_sociale_retraites_complementaires
+  description: >
+    Déclencher quand un retraité du privé (donc affilié à l'Agirc-Arrco) a besoin d'un
+    coup de pouce ponctuel : retour d'hospitalisation, maladie passagère, chute,
+    absence de l'aidant habituel, ou besoin d'adapter son logement et de prévenir la
+    perte d'autonomie. Mots-clés : Agirc-Arrco, action sociale retraite complémentaire,
+    aide à domicile momentanée, sortie d'hospitalisation, retour à domicile, diagnostic
+    bien chez moi, Sortir Plus, accompagnement retraité, caisse de retraite complémentaire.
+  domaine: Local
+  certitude: non_centralise
+
+id: action_sociale_retraites_complementaires
+libelle: "Action sociale des caisses de retraite complémentaire (Agirc-Arrco)"
+gestionnaire: agirc_arrco
+fiabilite: non_centralise
+
+resume_falc: >
+  L'Agirc-Arrco est la retraite complémentaire des salariés du privé. En plus de verser
+  la retraite, elle propose une "action sociale" pour aider les retraités à bien vieillir.
+  Plusieurs services existent, souvent pour les personnes de 75 ans et plus :
+  - L'aide à domicile momentanée : en cas de difficulté passagère (retour d'hôpital,
+    maladie, chute, absence de l'aidant), un professionnel peut venir aider à la maison,
+    organisé sous 48 heures, sans condition de revenus. Le nombre d'heures est limité
+    (par exemple 10 heures réparties sur quelques semaines, à confirmer).
+  - Le "Diagnostic Bien chez moi" : un ergothérapeute vient évaluer le logement et
+    propose des aménagements pour vivre en sécurité.
+  - "Sortir Plus" : un service d'accompagnement pour les sorties.
+  Ces services sont gérés par les caisses de retraite complémentaire et peuvent varier.
+  On ne les calcule pas au niveau national : il faut contacter l'Agirc-Arrco ou sa caisse.
+
+conditions:
+  - "Être retraité affilié à l'Agirc-Arrco (salariés du privé)."
+  - "Pour l'aide à domicile momentanée et plusieurs services : avoir 75 ans et plus (à vérifier selon le service)."
+  - "Aide à domicile momentanée : être confronté à une difficulté passagère (retour d'hospitalisation, maladie, chute, absence de l'aidant habituel)."
+  - "L'aide à domicile momentanée est accordée sans condition de ressources (à confirmer selon la situation)."
+
+requires:
+  - champ: affilie_agirc_arrco
+    question_falc: "Êtes-vous retraité du secteur privé (affilié à l'Agirc-Arrco) ?"
+    type: booleen
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: situation
+    question_falc: "Quelle est votre situation ? (retour d'hospitalisation, maladie, chute, absence de l'aidant, besoin d'adapter le logement, besoin d'accompagnement sortie...)"
+    type: enum
+
+openfisca: null   # Action sociale facultative des caisses de retraite complémentaire, non centralisée : aucun calcul national possible.
+
+demarche:
+  ou: "Auprès de l'Agirc-Arrco (plateforme dédiée) ou de sa caisse de retraite complémentaire (ex. Malakoff Humanis, AG2R La Mondiale, etc.)."
+  comment: >
+    Pour l'aide à domicile momentanée, appeler le 0 971 090 971 : un conseiller évalue
+    le besoin et organise l'intervention d'un service d'aide à domicile partenaire, sous
+    48 heures. Pour les autres services (Diagnostic Bien chez moi, Sortir Plus), faire
+    la demande via le site de l'Agirc-Arrco ou auprès de sa caisse de retraite complémentaire.
+  resolution_guichet: >
+    Étape 1 : vérifier que la personne est retraitée du privé (relevé de carrière ou
+    notification de retraite complémentaire Agirc-Arrco). Étape 2 : pour une difficulté
+    passagère (retour d'hôpital, maladie), appeler le 0 971 090 971 ou passer par la
+    plateforme dédiée aux 75 ans et plus (services75ans.agirc-arrco.fr). Étape 3 : pour
+    identifier sa caisse de retraite complémentaire (qui gère l'action sociale propre),
+    se reporter à sa notification de retraite ou à son espace personnel sur agirc-arrco.fr.
+    L'action sociale complète varie selon la caisse : demander directement le catalogue
+    des aides à sa caisse.
+  lien_fiche: "https://www.agirc-arrco.fr/particuliers/mes-services-particuliers/accompagnement-et-prevention/demander-une-aide-a-domicile-ponctuelle/"
+
+avertissements:
+  - "Action sociale non centralisée : les services et conditions varient selon l'Agirc-Arrco et la caisse de retraite complémentaire gestionnaire. Impossible de garantir un droit ou un volume d'heures précis au niveau national. Orienter vers la plateforme Agirc-Arrco ou la caisse."
+  - "Réservé aux retraités du privé affiliés à l'Agirc-Arrco : ne concerne pas les régimes spéciaux ni la fonction publique (autres dispositifs d'action sociale)."
+  - "Plusieurs services (aide à domicile momentanée, Sortir Plus, Diagnostic Bien chez moi) sont fléchés sur les 75 ans et plus : la condition d'âge doit être vérifiée service par service."
+  - "Le nombre d'heures de l'aide à domicile momentanée est limité (ex. 10 h sur quelques semaines) : valeur indicative à confirmer auprès de l'Agirc-Arrco au moment de la demande."
+
+sources:
+  - niveau: institution
+    ref: "agirc-arrco.fr — Demander une aide à domicile ponctuelle / momentanée (consulté 17/06/2026) — https://www.agirc-arrco.fr/particuliers/mes-services-particuliers/accompagnement-et-prevention/demander-une-aide-a-domicile-ponctuelle/"
+  - niveau: institution
+    ref: "agirc-arrco.fr — Accompagnement et prévention (action sociale) (consulté 17/06/2026) — https://www.agirc-arrco.fr/particuliers/mes-services-particuliers/accompagnement-et-prevention/"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr — L'aide à domicile momentanée pour les retraités Agirc-Arrco (consulté 17/06/2026) — https://www.pour-les-personnes-agees.gouv.fr/vivre-a-domicile/aides-financieres/l-aide-a-domicile-momentanee-pour-les-retraites-agirc-arrco"

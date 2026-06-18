@@ -1,0 +1,71 @@
+# Fiche aide — Réduction d'impôt pour frais de dépendance et d'hébergement en EHPAD
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: ri_frais_hebergement_ehpad
+  description: >
+    Déclencher pour une personne âgée hébergée en EHPAD ou en établissement de soins
+    de longue durée, qui paie des frais de dépendance et d'hébergement.
+    Mots-clés : réduction d'impôt EHPAD, maison de retraite, établissement personnes
+    âgées dépendantes, frais de dépendance, frais d'hébergement, soins longue durée.
+  domaine: Fiscal
+  certitude: cas_par_cas
+
+id: ri_frais_hebergement_ehpad
+libelle: "Réduction d'impôt au titre des frais de dépendance et d'hébergement en établissement (EHPAD)"
+gestionnaire: fiscal
+fiabilite: cas_par_cas
+statut: actif
+
+resume_falc: >
+  Si vous vivez en EHPAD (maison de retraite médicalisée) ou en établissement de soins
+  de longue durée, l'État vous rend une partie de ce que vous payez.
+  C'est une réduction d'impôt de 25 % des frais de dépendance et d'hébergement.
+  On compte vos dépenses jusqu'à 10 000 € par personne et par an.
+  La réduction maximale est donc de 2 500 € par personne et par an.
+
+conditions:
+  - "Être hébergé(e) dans un EHPAD ou un établissement de soins de longue durée (en France ou dans l'UE/EEE sous conditions)."
+  - "Les dépenses doivent porter sur la dépendance ET l'hébergement (les frais d'hébergement seuls, sans frais de dépendance, n'ouvrent pas droit à la réduction)."
+  - "Réduction égale à 25 % des dépenses, dans la limite de 10 000 € par personne hébergée et par an."
+  - "Réduction d'impôt maximale : 2 500 € par personne hébergée et par an."
+  - "Déduire d'abord les aides reçues (APA, aide sociale à l'hébergement, etc.) du montant déclaré."
+
+requires:
+  - champ: frais_dependance_hebergement
+    question_falc: "Combien avez-vous payé dans l'année pour la dépendance et l'hébergement en établissement (après déduction des aides comme l'APA) ?"
+    type: montant_annuel
+  - champ: type_etablissement
+    question_falc: "Êtes-vous dans un EHPAD ou un établissement de soins de longue durée ?"
+    type: enum
+  - champ: nb_personnes_hebergees
+    question_falc: "Combien de personnes du foyer sont hébergées en établissement ?"
+    type: enum
+
+openfisca:
+  sortie: null  # variable openfisca à confirmer (ri_frais_accueil_dependance / ehpad)
+  eligibilite: null
+  base_ressources: null
+  entrees: [frais_dependance_hebergement, etablissement_dependance]
+
+demarche:
+  ou: "Auprès de l'administration fiscale (impots.gouv.fr), au moment de la déclaration de revenus."
+  comment: >
+    Indiquez le montant des frais de dépendance et d'hébergement payés par personne hébergée,
+    après déduction des aides reçues, dans la rubrique
+    « Dépenses d'accueil dans un établissement pour personnes dépendantes » de la déclaration.
+  resolution_guichet: "Service des impôts des particuliers (SIP), impots.gouv.fr."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F17"
+
+avertissements:
+  - "C'est une RÉDUCTION d'impôt (non remboursable) : si vous n'êtes pas imposable, vous n'en bénéficiez pas. Une transformation en crédit d'impôt remboursable a été envisagée mais écartée du budget 2026."
+  - "Les frais d'hébergement seuls (sans frais de dépendance) n'ouvrent pas droit à la réduction."
+  - "Plafond et taux peuvent évoluer en loi de finances : vérifier les montants exacts de l'année de déclaration."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F17 « Frais d'accueil liés à la dépendance (réduction d'impôt) » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "impots.gouv.fr « Comment déclarer mes frais d'hébergement en EHPAD pour bénéficier de la réduction d'impôt ? » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr « La réduction d'impôt en établissement d'hébergement » (consulté 17/06/2026)"

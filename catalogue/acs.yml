@@ -1,0 +1,56 @@
+# Fiche aide — ACS (Aide au paiement d'une complémentaire santé) — OBSOLÈTE
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: acs
+  description: >
+    Déclencher si une personne mentionne l'ACS, l'« aide à la complémentaire santé »,
+    l'« aide au paiement d'une mutuelle », un « chèque ACS » ou une « attestation ACS ».
+    Aide SUPPRIMÉE : ce skill sert à informer que l'ACS n'existe plus et à rediriger vers la CSS.
+    Mots-clés : ACS, aide complémentaire santé, chèque mutuelle, attestation-chèque ACS.
+  domaine: Santé
+  certitude: cas_par_cas
+
+id: acs
+libelle: "Aide au paiement d'une complémentaire santé (ACS) — dispositif supprimé"
+gestionnaire: assurance_maladie
+fiabilite: cas_par_cas
+statut: obsolete
+
+resume_falc: >
+  L'ACS n'existe plus.
+  Cette aide servait à payer une partie de votre mutuelle.
+  Depuis le 1er novembre 2019, elle a été remplacée par la Complémentaire santé solidaire (CSS).
+  Si vous cherchez une aide pour payer votre mutuelle, c'est maintenant la CSS.
+  Vous ne pouvez plus demander l'ACS.
+
+conditions:
+  - "Dispositif supprimé le 1er novembre 2019 : plus aucune nouvelle demande possible."
+  - "Les anciens contrats ACS ont pris fin à leur échéance ou ont basculé vers la CSS."
+
+requires: []
+
+openfisca:
+  sortie: acs
+  eligibilite: null
+  base_ressources: null
+  entrees: []
+
+demarche:
+  ou: "Plus aucun guichet : l'ACS n'est plus délivrée. Adressez-vous à la CPAM (ou MSA) pour la Complémentaire santé solidaire."
+  comment: >
+    Ne demandez plus l'ACS. Faites une demande de Complémentaire santé solidaire (CSS)
+    sur votre compte ameli, ou auprès de votre caisse d'Assurance Maladie / MSA.
+  resolution_guichet: "Rediriger systématiquement vers la fiche css (Complémentaire santé solidaire)."
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F10027"
+
+avertissements:
+  - "AIDE OBSOLÈTE : l'ACS a été supprimée le 1er novembre 2019 et fusionnée dans la Complémentaire santé solidaire (CSS). Voir la fiche css.yml."
+  - "Depuis le 1er novembre 2019, il était impossible de souscrire un nouveau contrat ACS. Les contrats en cours ont continué jusqu'à leur terme puis basculé en CSS."
+  - "Variable openfisca « acs » conservée uniquement pour l'historique des situations antérieures à novembre 2019."
+
+sources:
+  - niveau: institution
+    ref: "solidarites.gouv.fr « Lancement de la Complémentaire santé solidaire » — fusion CMU-C + ACS au 1er novembre 2019 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "service-public.fr fiche F10027 « Complémentaire santé solidaire (ex-CMU-C) » — aide de remplacement (consulté 17/06/2026)"

@@ -1,0 +1,76 @@
+# Fiche aide — APA en établissement (EHPAD / USLD)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: apa_etablissement
+  description: >
+    Déclencher pour une personne âgée de 60 ans ou plus, en perte d'autonomie,
+    qui vit (ou va vivre) en EHPAD ou en USLD et doit payer le tarif dépendance.
+    Mots-clés : APA établissement, EHPAD, maison de retraite, USLD, tarif dépendance,
+    GIR, perte d'autonomie en institution.
+  domaine: Dépendance
+  certitude: auto
+
+id: apa_etablissement
+libelle: "Allocation personnalisée d'autonomie (APA) en établissement"
+gestionnaire: departemental
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'APA en établissement est une aide qui paie une partie du « tarif dépendance »
+  de votre maison de retraite (EHPAD) ou de votre unité de soins de longue durée (USLD).
+  Le tarif dépendance, c'est ce que l'établissement fait payer pour vous aider chaque jour
+  (se lever, se laver, manger).
+  Vous pouvez avoir cette aide si vous avez 60 ans ou plus et si vous avez besoin
+  d'aide tous les jours (GIR 1 à 4).
+  Il n'y a pas de condition de revenus pour avoir l'aide. Mais vos revenus servent
+  à calculer combien il vous reste à payer.
+  C'est le département qui verse cette aide.
+
+conditions:
+  - "Avoir 60 ans ou plus."
+  - "Vivre de façon stable et régulière en France."
+  - "Être en perte d'autonomie évaluée en GIR 1, 2, 3 ou 4 (les GIR 5 et 6 n'y ont pas droit)."
+  - "Vivre dans un établissement situé en France qui accueille au moins 25 personnes âgées dépendantes (sinon, c'est l'APA à domicile qui s'applique)."
+  - "Aucune condition de ressources pour ouvrir le droit ; les ressources servent seulement à calculer la participation restant à votre charge."
+
+requires:
+  - champ: age
+    question_falc: "Quel âge avez-vous ?"
+    type: date
+  - champ: gir
+    question_falc: "Quel est votre GIR (niveau de dépendance, de 1 à 6) ? Si vous ne le savez pas, le département fait évaluer."
+    type: enum
+  - champ: tarif_dependance_etablissement
+    question_falc: "Quel est le tarif dépendance de votre établissement pour votre GIR ? (il est écrit dans le contrat de séjour ou sur la facture)"
+    type: montant_mensuel
+  - champ: revenus_mensuels
+    question_falc: "Quels sont vos revenus chaque mois ?"
+    type: montant_mensuel
+
+openfisca:
+  sortie: apa_etablissement
+  eligibilite: apa_etablissement_eligibilite
+  entrees: [age, gir, apa_etablissement_tarif_dependance, apa_etablissement_gir_5_6_tarif, revenus]
+
+demarche:
+  ou: "Au conseil départemental du lieu de l'établissement, ou directement auprès de l'établissement qui peut transmettre la demande."
+  comment: >
+    Vous remplissez le formulaire de demande d'APA et vous joignez les pièces demandées
+    (pièce d'identité, justificatif de domicile, avis d'imposition, attestation de l'établissement).
+    L'établissement connaît son tarif dépendance et peut vous aider à remplir.
+  resolution_guichet: >
+    Le département est le bon guichet. En pratique, l'établissement transmet souvent la demande
+    et applique l'APA directement sur votre facture (« APA versée à l'établissement »).
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F35136"
+
+avertissements:
+  - "Les GIR 5 et 6 n'ouvrent pas droit à l'APA en établissement."
+  - "Si vos revenus sont inférieurs au seuil fixé chaque année (2 846,77 € par mois en 2026 — # à vérifier 2026), vous ne payez que le tarif dépendance le plus bas (celui des GIR 5-6) et l'APA paie la différence."
+  - "L'APA peut être versée directement à l'établissement, qui la déduit alors de votre facture."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F10009 / sous-fiche F35136 « APA - En établissement » (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr - « L'APA en établissement » (consulté 17/06/2026)"

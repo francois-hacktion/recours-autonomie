@@ -1,0 +1,80 @@
+# Fiche aide — Aides communales / CCAS
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: aides_communales_ccas
+  description: >
+    Déclencher quand une personne âgée a un besoin de proximité au niveau de sa commune :
+    portage de repas, téléassistance, aide ménagère communale, petit secours financier,
+    colis ou repas de fin d'année, transport local, registre canicule. Mots-clés : CCAS,
+    centre communal d'action sociale, mairie, aide commune, portage de repas, téléassistance,
+    secours, colis de Noël, aide municipale senior, CIAS.
+  domaine: Local
+  certitude: non_centralise
+
+id: aides_communales_ccas
+libelle: "Aides communales et CCAS (centres communaux d'action sociale)"
+gestionnaire: ccas
+fiabilite: non_centralise
+
+resume_falc: >
+  Chaque commune dispose d'un CCAS (centre communal d'action sociale), rattaché à la
+  mairie. Plusieurs communes peuvent aussi se regrouper dans un CIAS (intercommunal).
+  Le CCAS aide les habitants, et notamment les personnes âgées, au plus près de chez eux.
+  Les aides proposées dépendent de chaque commune. On trouve souvent :
+  - le portage de repas à domicile,
+  - la téléassistance,
+  - une aide ménagère ou un accompagnement,
+  - des secours financiers ponctuels en cas de difficulté,
+  - des colis ou repas (souvent en fin d'année),
+  - l'inscription au registre des personnes fragiles (plan canicule / grand froid).
+  Ces aides ne sont pas les mêmes partout : on ne peut pas les calculer au niveau
+  national. Pour savoir ce qui existe, il faut contacter le CCAS de la commune où vit
+  la personne (ou, à défaut de CCAS, la mairie).
+
+conditions:
+  - "Conditions fixées librement par chaque CCAS (souvent âge et/ou revenus)."
+  - "Résider dans la commune (ou l'intercommunalité) du CCAS."
+  - "Certaines aides sont accessibles à tous les habitants âgés (ex. registre canicule), d'autres sont soumises à conditions de ressources."
+
+requires:
+  - champ: commune_residence
+    question_falc: "Dans quelle commune vit la personne âgée ?"
+    type: texte
+  - champ: besoin_principal
+    question_falc: "Quel est le besoin ? (portage de repas, téléassistance, aide ménagère, secours financier, colis/repas, transport...)"
+    type: enum
+  - champ: revenus_mensuels
+    question_falc: "Quel est le montant total des revenus chaque mois ?"
+    type: montant_mensuel
+
+openfisca: null   # Aides propres à chaque CCAS (~35 000 communes), non centralisées : aucun calcul national possible.
+
+demarche:
+  ou: "Auprès du CCAS de la commune de résidence, ou de la mairie si la commune n'a pas de CCAS dédié."
+  comment: >
+    Se rendre (ou téléphoner) au CCAS ou à la mairie pour demander la liste des aides
+    proposées aux personnes âgées et constituer un dossier. Apporter une pièce d'identité,
+    un justificatif de domicile et des justificatifs de ressources. Pour le portage de
+    repas ou la téléassistance, le CCAS évalue la situation et oriente vers le service adapté.
+  resolution_guichet: >
+    Étape 1 : identifier la commune de résidence. Étape 2 : contacter le CCAS de cette
+    commune (souvent un service de la mairie) — coordonnées sur le site de la mairie ou
+    via l'accueil de la mairie. Étape 3 : si la commune est petite et n'a pas de CCAS
+    actif, s'adresser directement à la mairie ou au CIAS (intercommunal). Pour trouver
+    un CCAS, on peut aussi consulter l'UNCCAS (Union nationale des CCAS/CIAS), qui
+    fédère les CCAS et CIAS de France. Demander explicitement les aides facultatives
+    du CCAS pour les seniors.
+  lien_fiche: "https://www.unccas.org"
+
+avertissements:
+  - "Aides non centralisées : il existe environ 35 000 communes, chacune avec ses propres aides et conditions. Impossible de calculer un montant ou de garantir un droit au niveau national. Toujours orienter vers le CCAS local."
+  - "Toutes les communes ne proposent pas les mêmes aides ; certaines petites communes n'ont pas de CCAS actif (s'adresser alors à la mairie ou au CIAS)."
+  - "Le portage de repas peut, dans certains cas, être en partie pris en charge par l'APA : à vérifier avec le CCAS et le département."
+  - "Ne jamais annoncer de tarif, de plafond ou de montant national : tout dépend de la commune."
+
+sources:
+  - niveau: institution
+    ref: "UNCCAS — Union nationale des centres communaux et intercommunaux d'action sociale (consulté 17/06/2026) — https://www.unccas.org"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr — Les aides extralégales des mairies ou des conseils départementaux (consulté 17/06/2026) — https://www.pour-les-personnes-agees.gouv.fr/vivre-a-domicile/aides-financieres/les-aides-extralegales-des-mairies-ou-des-conseils-departementaux"

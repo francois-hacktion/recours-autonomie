@@ -1,0 +1,68 @@
+# Fiche aide — ALS (Allocation de logement sociale)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: als
+  description: >
+    Déclencher pour une personne qui paie un loyer (ou une redevance en
+    résidence non conventionnée) avec de petits revenus, et qui n'a pas droit
+    à l'APL ni à l'ALF. Souvent le cas d'une personne âgée seule, sans enfant
+    à charge, dans un logement non conventionné. Mots-clés : aide au logement,
+    ALS, loyer, CAF, MSA, logement non conventionné.
+  domaine: Logement
+  certitude: auto
+
+id: als
+libelle: "Allocation de logement sociale (ALS)"
+gestionnaire: caf_msa
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'ALS aide à payer votre loyer chaque mois. Elle est versée par la CAF
+  ou la MSA. C'est l'aide pour les personnes qui n'ont droit ni à l'APL
+  ni à l'ALF. Par exemple une personne âgée seule, sans enfant à charge,
+  qui loue un logement sans convention avec l'État.
+
+conditions:
+  - "Ne pas avoir droit à l'APL ni à l'ALF (l'ALS est l'aide qui reste)."
+  - "Le logement doit être votre résidence principale (vous y vivez plus de 8 mois par an)."
+  - "Avoir des revenus en dessous des plafonds fixés par la CAF."
+  - "Le logement doit être décent (en bon état)."
+  - "Résider en France de façon stable et régulière. Si vous êtes étranger, avoir un titre de séjour en cours de validité."
+
+requires:
+  - champ: loyer
+    question_falc: "Quel est le montant de votre loyer chaque mois (sans les charges) ?"
+    type: montant_mensuel
+  - champ: ressources_menage
+    question_falc: "Quels sont vos revenus chaque mois (retraite, salaire, autres) ?"
+    type: montant_mensuel
+  - champ: statut_occupation
+    question_falc: "Êtes-vous locataire, sous-locataire, ou résident en foyer ?"
+    type: enum
+
+openfisca:
+  sortie: als
+  eligibilite: null
+  base_ressources: null
+  entrees:
+    - loyer
+    - statut_occupation
+    - ressources_menage
+
+demarche:
+  ou: "CAF (caf.fr) ou MSA (msa.fr) selon votre régime."
+  comment: "Demande en ligne sur le site de la CAF ou de la MSA, ou formulaire papier disponible à l'accueil."
+  resolution_guichet: "Point conseil budget, France Services, ou accueil CAF/MSA pour être aidé dans la demande."
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F1280"
+
+avertissements:
+  - "On ne peut percevoir qu'une seule aide au logement : APL, ALS ou ALF. L'ALS est versée seulement si vous n'avez droit ni à l'APL ni à l'ALF. La CAF/MSA choisit automatiquement."
+  - "Les ressources prises en compte sont celles de l'année N-2 (par exemple revenus 2024 pour une demande en 2026)."
+  - "Le montant maximal et les plafonds varient selon la composition du foyer, le loyer et la zone géographique : à vérifier par simulation CAF avant affichage."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr / DILA, fiche F1280 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "caf.fr, éditeur du service de demande d'aide au logement"

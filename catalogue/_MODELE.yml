@@ -1,0 +1,108 @@
+# =====================================================================
+# FICHE MODÈLE — Catalogue Recours Autonomie
+# Copier ce fichier, le renommer <id>.yml, remplacer les <…> puis
+# SUPPRIMER les lignes de commentaire « # >>> ».
+# Règle d'or : aucun chiffre ni URL sans source institutionnelle vérifiée.
+#   Donnée non confirmée -> commentaire « # à vérifier <année> ».
+# Deux variantes en bas de fichier : (A) AIDE, (B) VARIABLE D'ÉVALUATION.
+# =====================================================================
+
+# ---------- (A) MODÈLE AIDE ----------
+# Fiche aide — <NOM LISIBLE DE L'AIDE>
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  # >>> En-tête de déclenchement, façon frontmatter de skill.
+  name: <id>                       # identifiant court snake_case = nom du fichier sans .yml = champ id
+  description: >
+    # >>> Quand le moteur doit déclencher cette fiche : profil, besoin, situation.
+    # >>> Terminer par une liste de mots-clés que l'usager pourrait employer.
+    Déclencher pour <profil / besoin>. Mots-clés : <mot1>, <mot2>, <mot3>.
+  domaine: <Ressources|Dépendance|Logement|Santé|Fiscal|Hébergement|Local>
+  certitude: <auto|evaluation|cas_par_cas|non_centralise>   # voir table fiabilité dans _SCHEMA.md
+
+id: <id>                           # identique à skill.name
+libelle: "<libellé officiel complet de l'aide>"
+gestionnaire: <departemental|national|caisse_retraite|caf_msa|assurance_maladie|fiscal|anah|action_logement|ccas|agirc_arrco>
+fiabilite: <barème_national_calcule|estimation_departementale|soumis_evaluation|cas_par_cas|non_centralise>
+statut: actif                      # ou: obsolete (dispositif supprimé/fusionné) — champ optionnel
+
+resume_falc: >
+  # >>> 2 à 4 phrases en FALC (facile à lire et à comprendre).
+  # >>> Phrases courtes, vouvoiement, pas de jargon. Dire à quoi sert l'aide.
+  <résumé simple>
+
+conditions:
+  # >>> Conditions d'éligibilité, une par ligne, en FALC.
+  # >>> Tout seuil chiffré -> source + année, sinon « # à vérifier <année> ».
+  - "<condition 1>"
+  - "<condition 2>"
+
+requires:
+  # >>> Données à collecter auprès de l'usager pour calculer/orienter.
+  - champ: <nom_champ>
+    question_falc: "<question simple posée à l'usager>"
+    type: <date|enum|montant_mensuel|montant_annuel|booleen|texte>
+    valeurs: [<...>]               # uniquement si type: enum — sinon supprimer
+    si_inconnu: <estimer|bloquer|ignorer>   # optionnel — sinon supprimer
+    note: >                        # optionnel — précision pour le moteur — sinon supprimer
+      <note>
+
+openfisca:
+  # >>> Mapping vers le moteur de droits. Mettre « openfisca: null » si l'aide
+  # >>> n'est pas modélisée (puis le préciser dans avertissements).
+  sortie: <variable_openfisca>
+  eligibilite: <variable|null>
+  base_ressources: <variable|null>
+  participation: <variable|null>   # optionnel — sinon supprimer
+  entrees: [<var1>, <var2>]
+
+demarche:
+  ou: "<guichet où déposer la demande>"
+  comment: "<comment déposer : en ligne, formulaire papier, simulateur officiel>"
+  resolution_guichet: "<comment trouver le bon guichet local si variable selon le territoire>"
+  lien_fiche: "<URL service-public.fr VÉRIFIÉE, ou 'à vérifier : <requête de recherche>'>"
+
+avertissements:
+  # >>> Pièges, limites, paramètres à recaler, récupération sur succession, etc.
+  - "<avertissement 1>"
+
+sources:
+  # >>> Hiérarchie : méta-étude > institution > presse spécialisée > reste.
+  # >>> Toujours dater la consultation.
+  - niveau: institution
+    ref: "service-public.fr fiche <Fxxxxx> « <titre> » (consulté <JJ/MM/AAAA>)"
+
+
+# =====================================================================
+# ---------- (B) MODÈLE VARIABLE D'ÉVALUATION ----------
+# Pour les entrées de la cartographie qui ne sont PAS des aides mais des
+# données d'évaluation (ex : gir, plan d'aide, tarif établissement).
+# Schéma allégé : pas de conditions / demarche / montant.
+# =====================================================================
+#
+# # Fiche variable d'évaluation — <NOM>
+# skill:
+#   name: <id>
+#   description: >
+#     Variable d'évaluation, pas une aide. Déclencher quand le moteur a besoin de <…>.
+#     Mots-clés : <…>.
+#   domaine: <Dépendance|...>
+#   certitude: evaluation
+# id: <id>
+# libelle: "<libellé>"
+# type: variable_evaluation
+# gestionnaire: <departemental|...>
+# resume_falc: >
+#   <explication simple de la variable, en FALC>
+# explication:
+#   qui_evalue: "<qui fixe cette donnée>"
+#   comment_obtenu: "<méthode / outil, ex : grille AGGIR>"
+#   echelle: "<échelle ou valeurs possibles, ex : 1 (plus dépendant) à 6>"
+# openfisca:
+#   variable: <variable_openfisca>
+# avertissements:
+#   - "Cette donnée est fixée par <…>, pas calculée par le moteur."
+# sources:
+#   - niveau: institution
+#     ref: "<source> (consulté <JJ/MM/AAAA>)"

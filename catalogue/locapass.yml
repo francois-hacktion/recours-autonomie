@@ -1,0 +1,67 @@
+# Fiche aide — Avance Loca-Pass
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: locapass
+  description: >
+    Déclencher pour une personne qui entre dans un nouveau logement et doit
+    payer le dépôt de garantie (la caution) au propriétaire. L'avance Loca-Pass
+    prête cette somme à taux zéro. Mots-clés : caution, dépôt de garantie,
+    Loca-Pass, Action Logement, emménagement, avance, prêt sans intérêt.
+  domaine: Logement
+  certitude: auto
+
+id: locapass
+libelle: "Avance Loca-Pass"
+gestionnaire: action_logement
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  Quand vous entrez dans un nouveau logement, le propriétaire demande souvent
+  un dépôt de garantie (une caution). L'avance Loca-Pass vous prête cette
+  somme. C'est un prêt à 0 % d'intérêt, que vous remboursez ensuite petit à
+  petit. Il est versé par Action Logement.
+
+conditions:
+  - "Le logement doit être votre résidence principale (occupé au moins 8 mois par an)."
+  - "Être salarié du secteur privé non agricole (quel que soit l'âge et le contrat), OU avoir moins de 30 ans (étudiant, en formation, en recherche d'emploi, jeune en alternance...)."
+  - "Faire la demande au plus tard dans les 2 mois après votre entrée dans le logement."
+  - "Le montant prêté ne peut pas dépasser 1 200 €."
+
+requires:
+  - champ: statut_demandeur
+    question_falc: "Êtes-vous salarié du secteur privé (hors agriculture), ou avez-vous moins de 30 ans ?"
+    type: enum
+  - champ: date_entree_logement
+    question_falc: "À quelle date êtes-vous (ou serez-vous) entré dans le logement ?"
+    type: date
+  - champ: depot_garantie
+    question_falc: "Quel est le montant du dépôt de garantie (la caution) demandé par le propriétaire ?"
+    type: montant_mensuel
+
+openfisca:
+  sortie: locapass_eligibilite
+  eligibilite: locapass_eligibilite
+  base_ressources: null
+  entrees:
+    - statut_demandeur
+    - date_entree_logement
+    - depot_garantie
+
+demarche:
+  ou: "Action Logement, sur locapass.actionlogement.fr."
+  comment: "Demande en ligne sur le site Action Logement, au plus tard 2 mois après l'entrée dans le logement."
+  resolution_guichet: "Action Logement (actionlogement.fr), France Services pour être aidé dans la demande en ligne."
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F18490"
+
+avertissements:
+  - "L'avance Loca-Pass est un prêt (à rembourser), pas une aide non remboursable. Le taux est de 0 %."
+  - "Le montant de l'avance est plafonné à 1 200 € (caution du logement)."
+  - "Les conditions d'éligibilité reposent surtout sur le statut (salarié du privé non agricole, ou jeune de moins de 30 ans), pas sur l'âge avancé : une personne âgée retraitée du privé peut ne pas être éligible. À vérifier au cas par cas auprès d'Action Logement."
+  - "La demande doit être faite dans les 2 mois suivant l'entrée dans le logement, sinon elle est refusée."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr / DILA, fiche F18490 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "actionlogement.fr, gestionnaire du dispositif Loca-Pass (locapass.actionlogement.fr)"

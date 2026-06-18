@@ -15,10 +15,10 @@ visites, compléter le dossier d'admission, estimer les aides, négocier le prix
 
 Le simulateur est un **tunnel de 15 étapes** en 4 phases :
 
-1. **Profil** — pour qui, âge, autonomie (GIR), handicap avant 60 ans.
-2. **Solution envisagée** — type d'hébergement, département, avancement, coûts EHPAD.
-3. **Ressources** — revenus, patrimoine, situation familiale, enfants (obligation alimentaire).
-4. **Contact** — capture des coordonnées (prénom, nom, email, téléphone) **avant** les résultats.
+1. **Profil** : pour qui, âge, autonomie (GIR), handicap avant 60 ans.
+2. **Solution envisagée** : type d'hébergement, département, avancement, coûts EHPAD.
+3. **Ressources** : revenus, patrimoine, situation familiale, enfants (obligation alimentaire).
+4. **Contact** : capture des coordonnées (prénom, nom, email, téléphone) **avant** les résultats.
 
 Source : board Whimsical `zenior-TiqLL5R2X8D2pUr6pHmuhC`, relevé écran par écran.
 

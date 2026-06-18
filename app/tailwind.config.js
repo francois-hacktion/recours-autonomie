@@ -46,7 +46,8 @@ export default {
         ],
       },
       maxWidth: {
-        lecture: '46rem',
+        lecture: '46rem', // colonne de lecture étroite (conversation)
+        projection: '80rem', // pleine largeur paysage pour la projection
       },
       // Ombre douce des cartes, dans l'esprit aéré du simulateur URSSAF.
       boxShadow: {

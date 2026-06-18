@@ -1,0 +1,71 @@
+# Fiche aide — Aide au logement en résidence autonomie (foyer logement)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: aide_logement_residence_autonomie
+  description: >
+    Déclencher pour une personne âgée qui vit (ou va vivre) en résidence
+    autonomie (ancien foyer logement) et qui paie une redevance. L'aide au
+    logement peut couvrir une partie de cette redevance. Mots-clés : résidence
+    autonomie, foyer logement, redevance, aide au logement en établissement,
+    APL foyer, ALS foyer, personne âgée.
+  domaine: Logement
+  certitude: auto
+
+id: aide_logement_residence_autonomie
+libelle: "Aide au logement en résidence autonomie (foyer logement)"
+gestionnaire: caf_msa
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  Si vous vivez en résidence autonomie (avant on disait foyer logement),
+  vous payez une redevance chaque mois. La CAF ou la MSA peut vous aider à
+  la payer. C'est l'APL si la résidence est conventionnée avec l'État, ou
+  l'ALS si elle ne l'est pas. Vous ne pouvez avoir qu'une seule de ces aides.
+
+conditions:
+  - "Vivre en résidence autonomie (foyer logement) à titre de résidence principale."
+  - "Payer une redevance pour votre logement dans la résidence."
+  - "Avoir des revenus en dessous des plafonds fixés par la CAF."
+  - "Pour l'APL : la résidence doit être conventionnée avec l'État. Sinon, c'est l'ALS qui s'applique."
+  - "Résider en France de façon stable et régulière."
+
+requires:
+  - champ: residence_conventionnee
+    question_falc: "Votre résidence autonomie est-elle conventionnée avec l'État ? Le gestionnaire de la résidence peut vous le dire."
+    type: booleen
+  - champ: redevance
+    question_falc: "Quel est le montant de la redevance que vous payez chaque mois ?"
+    type: montant_mensuel
+  - champ: ressources_menage
+    question_falc: "Quels sont vos revenus chaque mois (retraite, autres) ?"
+    type: montant_mensuel
+
+openfisca:
+  sortie: aides_logement_foyer*
+  eligibilite: null
+  base_ressources: null
+  entrees:
+    - residence_conventionnee
+    - redevance
+    - ressources_menage
+
+demarche:
+  ou: "CAF (caf.fr) ou MSA (msa.fr) selon votre régime. La résidence peut faire la demande pour vous."
+  comment: "Demande en ligne ou papier. En résidence conventionnée, l'APL est souvent versée directement à la résidence et déduite de la redevance facturée."
+  resolution_guichet: "Accueil de la résidence autonomie, CCAS de la commune, France Services, ou accueil CAF/MSA."
+  lien_fiche: "à vérifier : service-public.fr aide au logement résidence autonomie foyer logement"
+
+avertissements:
+  - "On ne peut percevoir qu'une seule aide au logement (APL ou ALS selon que la résidence est conventionnée ou non). La CAF/MSA détermine automatiquement laquelle."
+  - "En résidence conventionnée, l'APL est en général versée directement à la résidence : votre redevance à payer baisse d'autant."
+  - "Le préfixe * sur la variable OpenFisca (aides_logement_foyer) signale une variable spécifique foyer : vérifier le nom exact et les paramètres de barème de l'année en cours avant affichage."
+  - "Montants indicatifs 2026 selon la presse spécialisée (de l'ordre de quelques centaines d'euros) : à confirmer par simulation CAF, non retenus comme chiffres officiels."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche APL F12006 et fiche ALS F1280 (consulté 17/06/2026) — aide au logement applicable en résidence autonomie"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr (CNSA), portail officiel résidences autonomie"
+  - niveau: presse_specialisee
+    ref: "à vérifier : montants 2026 spécifiques résidence autonomie (sources institutionnelles à confirmer)"

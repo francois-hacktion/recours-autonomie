@@ -1,0 +1,73 @@
+# Fiche aide — APA d'urgence (versement anticipé en urgence)
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+
+skill:
+  name: apa_urgence
+  description: >
+    Déclencher quand une personne âgée a un besoin d'aide immédiat (urgence médicale
+    ou sociale : sortie d'hôpital, décès de l'aidant, dégradation brutale de l'état de santé)
+    et ne peut pas attendre le traitement complet de sa demande d'APA.
+    Mots-clés : APA urgence, versement anticipé, forfait urgence, sortie d'hôpital,
+    aidant indisponible, perte d'autonomie soudaine.
+  domaine: Dépendance
+  certitude: auto
+
+id: apa_urgence
+libelle: "APA versée à titre d'urgence (forfait provisoire)"
+gestionnaire: departemental
+fiabilite: barème_national_calcule
+
+resume_falc: >
+  L'APA d'urgence, c'est de l'argent versé vite, en attendant que votre dossier d'APA
+  normal soit étudié.
+  Elle sert quand il y a une urgence médicale ou sociale : par exemple vous sortez de l'hôpital,
+  votre santé se dégrade vite, ou la personne qui s'occupait de vous ne peut plus le faire.
+  Le département verse un montant fixe (un « forfait ») dès que votre dossier est complet,
+  sans attendre la fin de l'évaluation.
+  Ce forfait est versé pendant 2 mois maximum.
+  Plus tard, ce qui a été versé en urgence est déduit de l'APA normale.
+
+conditions:
+  - "Avoir 60 ans ou plus et vivre en France de façon stable et régulière."
+  - "Être dans une situation d'urgence attestée, de nature médicale ou sociale."
+  - "Avoir déposé une demande d'APA (l'urgence accélère le versement, elle ne remplace pas la demande)."
+  - "Le forfait d'urgence est versé dès le dépôt du dossier complet, à titre provisoire."
+
+requires:
+  - champ: situation_urgence
+    question_falc: "Y a-t-il une urgence médicale ou sociale (sortie d'hôpital, aidant absent, santé qui se dégrade vite) ?"
+    type: booleen
+  - champ: age
+    question_falc: "Quel âge avez-vous ?"
+    type: date
+  - champ: demande_apa_deposee
+    question_falc: "Avez-vous déjà déposé une demande d'APA ?"
+    type: booleen
+
+openfisca:
+  sortie: apa_urgence
+  eligibilite: apa_urgence_eligibilite
+  entrees: [age, apa_urgence_situation_urgence, apa_urgence_forfait]
+
+demarche:
+  ou: "Au conseil départemental, en signalant l'urgence (médicale ou sociale)."
+  comment: >
+    Vous déposez votre demande d'APA en précisant qu'il y a une urgence.
+    Vous joignez un justificatif de l'urgence (certificat médical, attestation de sortie
+    d'hospitalisation, signalement d'un travailleur social).
+    Dès que le dossier est complet, le président du conseil départemental verse le forfait
+    d'urgence à titre provisoire.
+  resolution_guichet: >
+    Le département est le bon guichet. Une assistante sociale (de l'hôpital, du CCAS
+    ou du département) peut accélérer la demande.
+  lien_fiche: "https://www.service-public.fr/particuliers/vosdroits/F10009"
+
+avertissements:
+  - "Le forfait d'urgence est de 1 040,16 € (soit 50 % du montant maximal attribué en GIR 1). # à vérifier 2026"
+  - "Le versement en urgence dure 2 mois maximum à partir du dépôt de la demande."
+  - "Les sommes versées en urgence sont déduites de l'APA versée ensuite."
+  - "Si la demande est finalement rejetée (perte d'autonomie insuffisante) ou si l'APA accordée est plus faible, les sommes versées en urgence ne sont pas récupérées."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr fiche F10009 « Allocation personnalisée d'autonomie (APA) » - section APA en urgence (consulté 17/06/2026)"

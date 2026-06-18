@@ -1,0 +1,76 @@
+# Fiche aide — APA à domicile
+# Catalogue Recours Autonomie · une fiche par aide (logique skill)
+# Cas départemental : calcul national partiel, intrants locaux requis.
+
+skill:
+  name: apa_domicile
+  description: >
+    Déclencher pour une personne de 60 ans ou plus vivant à domicile et ayant
+    besoin d'aide pour les actes de la vie quotidienne (perte d'autonomie,
+    GIR 1 à 4). Mots-clés : aide à domicile, toilette, repas, maintien à domicile,
+    plan d'aide, dépendance, après une chute.
+  domaine: Dépendance
+  certitude: evaluation
+
+id: apa_domicile
+libelle: "Allocation personnalisée d'autonomie (APA) à domicile"
+gestionnaire: departemental
+fiabilite: estimation_departementale
+
+resume_falc: >
+  L'APA aide à payer les services dont vous avez besoin pour rester chez vous
+  (aide à domicile, repas, aménagement du logement). Le montant dépend de votre
+  niveau d'autonomie et de vos revenus. C'est votre département qui décide.
+
+conditions:
+  - "Avoir 60 ans ou plus."
+  - "Avoir besoin d'aide pour les actes de la vie quotidienne (niveau GIR 1 à 4)."
+  - "Résider en France de façon stable et régulière."
+
+requires:
+  - champ: date_naissance
+    question_falc: "Quelle est votre date de naissance ?"
+    type: date
+  - champ: gir
+    question_falc: "Avez-vous déjà été évalué par le département pour votre autonomie ? Si oui, connaissez-vous votre GIR ?"
+    type: enum
+    valeurs: [1, 2, 3, 4, 5, 6]
+    si_inconnu: estimer
+    note: >
+      Le GIR est fixé par l'équipe médico-sociale du département, pas par nous.
+      Si l'utilisateur ne le connaît pas, proposer une auto-évaluation indicative
+      et marquer le résultat comme estimation_incomplete.
+  - champ: dependance_plan_aide_domicile
+    question_falc: "Avez-vous une idée du coût mensuel des aides dont vous avez besoin à la maison ?"
+    type: montant_mensuel
+    si_inconnu: estimer
+  - champ: retraite_brute
+    question_falc: "Quel est le montant de votre retraite chaque mois ?"
+    type: montant_mensuel
+
+openfisca:
+  sortie: apa_domicile
+  eligibilite: apa_eligibilite
+  base_ressources: base_ressources_apa
+  participation: apa_domicile_participation
+  entrees:
+    - date_naissance
+    - gir
+    - dependance_plan_aide_domicile
+    - retraite_brute
+
+demarche:
+  ou: "Conseil départemental du lieu de résidence."
+  comment: "Formulaire de demande d'aides à l'autonomie à domicile (papier ou en ligne selon le département)."
+  resolution_guichet: "Annuaire des départements, open data CNSA sur data.gouv.fr."
+  lien_fiche: "https://www.service-public.gouv.fr/particuliers/vosdroits/F10009"
+
+avertissements:
+  - "Le montant calculé est une estimation nationale. Le montant réel est fixé par le département après évaluation à domicile."
+  - "Formule OpenFisca héritée de la réforme ASV 2016 : vérifier les paramètres de barème de l'année en cours avant affichage."
+
+sources:
+  - niveau: institution
+    ref: "service-public.fr / DILA, fiche F10009 (consulté 17/06/2026)"
+  - niveau: institution
+    ref: "pour-les-personnes-agees.gouv.fr (CNSA), éditeur du portail"

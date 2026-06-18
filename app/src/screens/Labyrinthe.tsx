@@ -49,7 +49,7 @@ export function Labyrinthe() {
   })).filter((g) => g.aides.length > 0)
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-6">
+    <div className="mx-auto w-full max-w-projection space-y-6">
       {/* Intro : poser le problème. */}
       <header className="max-w-lecture">
         <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-etat-grey">

@@ -2,15 +2,23 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   ArrowRight,
   BadgeCheck,
+  ClipboardList,
   ExternalLink,
+  Handshake,
   Info,
   Loader2,
+  Lock,
+  Mail,
+  MailCheck,
   Mic,
+  Phone,
   RotateCcw,
+  Send,
   TriangleAlert,
   Volume2,
 } from 'lucide-react'
 import { DIALOGUE_VOCAL } from '@/data/dialogueVocal'
+import { ADRESSE_SERVICE, COMMUNE, GUICHETS, MAIL, PHRASE_APPEL } from '@/data/miseEnRelation'
 import { calculerDroits, formaterEuros, type Situation } from '@/lib/moteur'
 
 // Démonstrateur de l'assistant vocal. La personne âgée parle ; l'assistant pose des
@@ -20,7 +28,7 @@ import { calculerDroits, formaterEuros, type Situation } from '@/lib/moteur'
 // L'aidant ou le présentateur fait avancer chaque tour : appuyer pour faire "parler"
 // la personne, puis confirmer. Le calcul des montants reste dans le moteur déterministe.
 
-type Phase = 'dialogue' | 'calcul' | 'resultats'
+type Phase = 'dialogue' | 'calcul' | 'resultats' | 'mise_en_relation'
 type SousEtape = 'prete' | 'ecoute' | 'comprise'
 
 export function AssistantVocal() {
@@ -73,7 +81,16 @@ export function AssistantVocal() {
   }
 
   if (phase === 'resultats') {
-    return <RestitutionVocale onRestart={recommencer} />
+    return (
+      <RestitutionVocale
+        onRestart={recommencer}
+        onMiseEnRelation={() => setPhase('mise_en_relation')}
+      />
+    )
+  }
+
+  if (phase === 'mise_en_relation') {
+    return <MiseEnRelationVocale onRestart={recommencer} />
   }
 
   return (
@@ -240,7 +257,13 @@ function EtapeMoteur() {
   )
 }
 
-function RestitutionVocale({ onRestart }: { onRestart: () => void }) {
+function RestitutionVocale({
+  onRestart,
+  onMiseEnRelation,
+}: {
+  onRestart: () => void
+  onMiseEnRelation: () => void
+}) {
   // La situation est reconstruite à partir des paroles comprises, puis calculée.
   const situation = useMemo(
     () =>
@@ -257,7 +280,7 @@ function RestitutionVocale({ onRestart }: { onRestart: () => void }) {
   }, [])
 
   return (
-    <div className="mx-auto w-full max-w-lecture space-y-5">
+    <div className="mx-auto w-full max-w-3xl space-y-5">
       <div className="rounded-xl border border-etat-blue bg-etat-blue p-5 text-white">
         <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/80">
           <Volume2 size={16} aria-hidden />
@@ -274,6 +297,76 @@ function RestitutionVocale({ onRestart }: { onRestart: () => void }) {
         <CarteResultatVocal key={r.aide} r={r} />
       ))}
 
+      <div className="flex flex-wrap gap-3 pt-1">
+        <button
+          type="button"
+          onClick={onMiseEnRelation}
+          className="inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-etat-blue-hover"
+        >
+          <Handshake size={20} aria-hidden />
+          Et maintenant, contacter le bon guichet
+        </button>
+        <button
+          type="button"
+          onClick={onRestart}
+          className="inline-flex items-center gap-2 rounded-lg border-2 border-etat-blue px-5 py-3 font-semibold text-etat-blue transition-colors hover:bg-etat-blue-light"
+        >
+          <RotateCcw size={18} aria-hidden />
+          Refaire l’échange vocal
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ── Service de mise en relation, joué jusqu'au bout. ─────────────────────────
+// Lève le frein du passage à l'acte : on résout le bon guichet (annuaire DILA en
+// cible) et on produit un livrable de contact, fiche d'appel ou message minimisé.
+type EtapeMR = 'canal' | 'fiche_appel' | 'mail_consentement' | 'mail_envoye'
+
+function MiseEnRelationVocale({ onRestart }: { onRestart: () => void }) {
+  const [etape, setEtape] = useState<EtapeMR>('canal')
+
+  return (
+    <div className="mx-auto w-full max-w-3xl space-y-5">
+      <div className="rounded-xl border-l-4 border-teal bg-teal-bg p-5">
+        <p className="flex items-center gap-2 font-bold text-teal-hover">
+          <Handshake size={20} aria-hidden />
+          Passer à l’acte : contacter le bon guichet
+        </p>
+        <p className="mt-1 text-etat-ink">
+          Connaître ses droits ne suffit pas, le plus dur c’est de franchir le pas. Le service
+          prépare le premier contact avec le bon guichet, près de chez vous.
+        </p>
+      </div>
+
+      <BulleAssistant texte="Souhaitez-vous que je prépare votre prise de contact ? Je peux vous donner les numéros à appeler, ou bien envoyer un message en votre nom au guichet. Qu’est-ce qui vous arrange le plus ?" />
+
+      {etape === 'canal' && (
+        <div className="grid gap-3 pl-10 sm:grid-cols-2">
+          <BoutonCanal
+            icone={Phone}
+            titre="Par téléphone"
+            sous="Conseillé pour un premier contact"
+            onClick={() => setEtape('fiche_appel')}
+          />
+          <BoutonCanal
+            icone={Mail}
+            titre="Par message"
+            sous="Nous l’envoyons pour vous"
+            onClick={() => setEtape('mail_consentement')}
+          />
+        </div>
+      )}
+
+      {etape === 'fiche_appel' && <FicheAppel onMail={() => setEtape('mail_consentement')} />}
+
+      {(etape === 'mail_consentement' || etape === 'mail_envoye') && (
+        <BlocMail envoye={etape === 'mail_envoye'} onEnvoyer={() => setEtape('mail_envoye')} />
+      )}
+
+      {etape !== 'canal' && <NoteMinimisation />}
+
       <button
         type="button"
         onClick={onRestart}
@@ -283,6 +376,141 @@ function RestitutionVocale({ onRestart }: { onRestart: () => void }) {
         Refaire l’échange vocal
       </button>
     </div>
+  )
+}
+
+function BoutonCanal({
+  icone: Icone,
+  titre,
+  sous,
+  onClick,
+}: {
+  icone: typeof Phone
+  titre: string
+  sous: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-start gap-3 rounded-xl border-2 border-etat-blue bg-white p-4 text-left transition-colors hover:bg-etat-blue-light"
+    >
+      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-etat-blue-light text-etat-blue">
+        <Icone size={20} aria-hidden />
+      </span>
+      <span>
+        <span className="block font-bold text-etat-ink">{titre}</span>
+        <span className="block text-sm text-etat-grey">{sous}</span>
+      </span>
+    </button>
+  )
+}
+
+function FicheAppel({ onMail }: { onMail: () => void }) {
+  return (
+    <div className="space-y-4">
+      <Comprehension texte="Très bien, le téléphone est souvent le plus simple. Voici votre fiche d’appel, prête à utiliser." />
+      <div className="rounded-xl border border-etat-border bg-white p-5 shadow-carte">
+        <h3 className="flex items-center gap-2 text-lg font-bold">
+          <ClipboardList size={20} className="text-etat-blue" aria-hidden />
+          Votre fiche d’appel
+        </h3>
+        <ol className="mt-4 space-y-3">
+          {GUICHETS.map((g, i) => (
+            <li key={g.nom} className="rounded-lg border border-etat-border p-4">
+              <div className="flex items-start gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-etat-blue text-sm font-bold text-white">
+                  {i + 1}
+                </span>
+                <div className="min-w-0">
+                  <p className="font-bold text-etat-ink">{g.nom}</p>
+                  <p className="text-sm text-etat-grey">{g.role}</p>
+                  <p className="mt-1 flex items-center gap-2 text-lg font-bold text-etat-blue">
+                    <Phone size={18} aria-hidden />
+                    {g.telephone}
+                  </p>
+                  <p className="text-sm text-etat-grey">{g.horaires}</p>
+                </div>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <div className="mt-4 rounded-lg bg-etat-blue-light p-4">
+          <p className="font-semibold text-etat-blue">Une phrase pour commencer :</p>
+          <p className="mt-1 italic text-etat-ink">«&nbsp;{PHRASE_APPEL}&nbsp;»</p>
+        </div>
+        <p className="mt-3 text-sm text-etat-grey">
+          Pensez à noter le nom de la personne au bout du fil et la date de votre appel.
+        </p>
+      </div>
+
+      <button
+        type="button"
+        onClick={onMail}
+        className="inline-flex items-center gap-2 font-semibold text-etat-blue underline underline-offset-2 hover:text-etat-blue-hover"
+      >
+        <Mail size={16} aria-hidden />
+        Plutôt un message envoyé pour moi
+      </button>
+    </div>
+  )
+}
+
+function BlocMail({ envoye, onEnvoyer }: { envoye: boolean; onEnvoyer: () => void }) {
+  return (
+    <div className="space-y-4">
+      <Comprehension texte="Avec plaisir. Voici le message que nous enverrions en votre nom. Il ne dit rien de votre santé ni de vos revenus." />
+      <div className="rounded-xl border border-etat-border bg-white p-5 shadow-carte">
+        <p className="text-sm font-semibold uppercase tracking-wide text-etat-grey">
+          À : {MAIL.destinataire}
+        </p>
+        <p className="mt-1 font-bold text-etat-ink">{MAIL.objet}</p>
+        <pre className="mt-3 whitespace-pre-wrap font-sans text-etat-ink">{MAIL.corps}</pre>
+      </div>
+
+      {envoye ? (
+        <div className="flex items-start gap-3 rounded-xl border border-valide/40 bg-valide-bg p-4">
+          <MailCheck size={22} className="mt-0.5 shrink-0 text-valide" aria-hidden />
+          <div>
+            <p className="font-bold text-valide">Message envoyé en votre nom</p>
+            <p className="text-sm text-etat-ink">
+              Envoyé depuis notre adresse de service ({ADRESSE_SERVICE}). Le CCAS de {COMMUNE} vous
+              recontactera. Vous n’avez rien d’autre à faire.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-etat-border bg-etat-bg p-4">
+          <p className="font-semibold text-etat-ink">
+            Êtes-vous d’accord pour que nous l’envoyions en votre nom, depuis notre adresse de
+            service ?
+          </p>
+          <p className="mt-1 text-sm text-etat-grey">
+            Vous pouvez aussi le copier et l’envoyer vous-même si vous préférez.
+          </p>
+          <button
+            type="button"
+            onClick={onEnvoyer}
+            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 font-semibold text-white transition-colors hover:bg-etat-blue-hover"
+          >
+            <Send size={18} aria-hidden />
+            Oui, envoyez pour moi
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function NoteMinimisation() {
+  return (
+    <p className="flex items-start gap-2 text-sm text-etat-grey">
+      <Lock size={15} className="mt-0.5 shrink-0 text-etat-grey" aria-hidden />
+      Protection des données : ce contact ne contient ni votre état de santé, ni votre niveau
+      d’autonomie, ni vos revenus. Seulement de quoi vous recontacter.
+    </p>
   )
 }
 
