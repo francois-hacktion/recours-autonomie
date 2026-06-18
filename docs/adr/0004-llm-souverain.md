@@ -1,10 +1,12 @@
 # ADR-0004 : Fournisseur LLM souverain, modèles et function-calling vers OpenFisca
 
-> Maintenu en Français, guillemets droits. Statut : proposé. Date : 2026-06-18.
+> Maintenu en Français, guillemets droits. Statut : accepté. Date : 2026-06-18.
 
 ## Statut
 
-Proposé.
+Accepté. La direction souveraine est actée. Les points à valider en fin de document sont des
+réserves d'implémentation (à lever au playground et avant production), pas des conditions à la
+décision. Cet ADR consolide et remplace une note antérieure plus courte.
 
 ## Contexte
 
