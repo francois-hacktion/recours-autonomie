@@ -10,9 +10,9 @@
 
 Navigation par **onglets** en haut de page (barre sticky dans `app/src/App.tsx`), un onglet par
 écran, dans l'ordre de présentation, la démo vocale étant le cœur de l'offre :
-`Accueil · Le problème · Assistant vocal · Espace aidant · Parcours guidé`. Navigation par état en
-mémoire (`useState<Vue>`), pas de routing, pas d'URL. Type des vues dans `app/src/lib/vue.ts` :
-`accueil | assure | aidant | vocal | labyrinthe`.
+`Accueil · Le problème · Assistant vocal · Espace aidant · Parcours guidé · Le défi technique ·
+Notre solution`. Navigation par état en mémoire (`useState<Vue>`), pas de routing, pas d'URL. Type
+des vues dans `app/src/lib/vue.ts` : `accueil | assure | aidant | vocal | labyrinthe | defi | solution`.
 
 Les écrans qui montrent la future app sont pensés **plein écran paysage** pour la projection
 (largeur `max-w-projection`, token Tailwind).
@@ -21,9 +21,11 @@ Les écrans qui montrent la future app sont pensés **plein écran paysage** pou
 |---|---|---|
 | Accueil | `screens/Accueil.tsx` | Vitrine publique : hero « La technologie au service de nos aînés », le drame (vraies stats), la solution, la souveraineté, la transparence |
 | Le problème | `screens/Labyrinthe.tsx` | ≈ 28 dispositifs, niveaux de certitude, fond de dédale |
-| Assistant vocal | `screens/AssistantVocal.tsx` | La personne parle, transcription progressive, réassurance, restitution, puis **mise en relation jouée** (choix du canal, fiche d'appel ou mail envoyé par le service après consentement) |
+| Assistant vocal | `screens/AssistantVocal.tsx` | **Étape de cadrage** (que cherche la personne ?), puis **deux branches jouées jusqu'au bout** : « renseignement » (une question sur une aide locale, l'adaptation du logement, avec **recherche locale visible** puis mise en relation) ou « labyrinthe » (4 questions, moteur, APA + ASPA, mise en relation). La mise en relation propose le canal (fiche d'appel ou mail envoyé par le service après consentement) |
 | Espace aidant | `screens/EspaceAidant.tsx` | Tableau de bord d'un proche qui pilote les aides d'un aîné (Jeanne, 84 ans) |
 | Parcours guidé | `screens/ParcoursAssure.tsx` | 4 questions au clic → étape moteur → restitution APA + ASPA |
+| Le défi technique | `screens/DefiTechnique.tsx` | Page décideurs : le problème vu côté technique (jungle d'acteurs, multiplicité des API et jeux de données, couches de certitude, risque d'inventer un montant). Vrais chiffres du catalogue |
+| Notre solution | `screens/SolutionTechnique.tsx` | Page décideurs : briques publiques assemblées (OpenFisca calcule, l'assistant oriente, souveraineté Albert, conformité IA Act) |
 
 ## 2. Le garde-fou matérialisé
 
@@ -41,10 +43,11 @@ tableau de bord aidant. Tous les chiffres sortent du même moteur.
 | Fichier | Contenu |
 |---|---|
 | `data/questions.ts` | Script du parcours au clic (4 questions FALC) |
-| `data/dialogueVocal.ts` | Script vocal empathique (question + dictée + réassurance + confirmation) |
+| `data/dialogueVocal.ts` | Script vocal empathique branche labyrinthe (question + dictée + réassurance + confirmation) |
+| `data/renseignementLocal.ts` | Branche renseignement : cadrage, question sur l'adaptation du logement, étapes de recherche locale, pistes au conditionnel, contact France Services / CCAS |
 | `data/aidant.ts` | 8 aides du tableau de bord aidant (statut, régime, montant, prochaine action) |
 | `data/labyrinthe.ts` | Catalogue complet des ≈ 28 dispositifs (domaine, gestionnaire, source, certitude) |
-| `data/miseEnRelation.ts` | Guichets fictifs façon DILA, fiche d'appel, gabarit de mail minimisé, adresse de service |
+| `data/miseEnRelation.ts` | Guichets fictifs façon DILA, type `Contact`, fiche d'appel, gabarit de mail minimisé, adresse de service |
 
 ## 4. Charte graphique
 

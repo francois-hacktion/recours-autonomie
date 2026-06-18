@@ -24,6 +24,14 @@ export interface Guichet {
   horaires: string
 }
 
+// Livrable de contact pour un besoin donné : guichets résolus, phrase d'appel, mail
+// minimisé. Selon la branche du parcours vocal, on passe le contact adapté au besoin.
+export interface Contact {
+  guichets: Guichet[]
+  phrase: string
+  mail: { destinataire: string; objet: string; corps: string }
+}
+
 export const COMMUNE = 'Roncourt-les-Tilleuls'
 
 // Adresse de service générique depuis laquelle le service public envoie le message,
@@ -80,4 +88,12 @@ Pourriez-vous me recontacter ? Vous pouvez me joindre au 03 21 55 00 00, de pré
 
 Avec mes remerciements,
 Jeanne D.`,
+}
+
+// Contact par défaut, pour la branche "faire le point sur ses droits" (maintien à
+// domicile). La branche "renseignement" passe un contact propre à son besoin.
+export const CONTACT_DOMICILE: Contact = {
+  guichets: GUICHETS,
+  phrase: PHRASE_APPEL,
+  mail: MAIL,
 }

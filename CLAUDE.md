@@ -88,7 +88,7 @@ Le calcul est isolé dans `app/src/lib/moteur.ts`, séparé de la conversation. 
 
 ### Bundle actuel
 
-`app/dist/index.html` ≈ **244 kB** (gzip ≈ 77 kB). Compatible double-clic `file://`.
+`app/dist/index.html` ≈ **333 kB** (gzip ≈ 99 kB). Compatible double-clic `file://`.
 
 ---
 
@@ -143,6 +143,9 @@ recours-autonomie/
 │   ├── demonstrateur.md              (écrans, navigation par onglets, charte URSSAF, garde-fou)
 │   ├── prompt-mise-en-relation.md    (prompt LLM : guichets DILA, envoi du mail par le service)
 │   ├── albert-et-souverainete.md     (fiche de référence LLM souverain)
+│   ├── conduite-du-changement.md     (du démonstrateur au pilote : Albert, départements, sponsor, budget €)
+│   ├── defi-technique.md             (le problème côté technique, source de l'onglet "Le défi")
+│   ├── solution-technique.md         (la solution côté technique, source de l'onglet "Notre solution")
 │   └── adr/
 │       └── 0004-llm-souverain.md     (ADR : Albert API, modèles, function-calling)
 ├── catalogue/           (cible : fiches YAML, à construire)
@@ -156,23 +159,26 @@ recours-autonomie/
         ├── index.css
         ├── lib/
         │   ├── cn.ts
-        │   ├── vue.ts    (type Vue : accueil | assure | aidant | vocal | labyrinthe)
+        │   ├── vue.ts    (type Vue : accueil | assure | aidant | vocal | labyrinthe | defi | solution)
         │   └── moteur.ts  (LE moteur : calcul déterministe, stub OpenFisca)
         ├── data/
-        │   ├── questions.ts       (script du parcours au clic)
-        │   ├── dialogueVocal.ts   (script vocal empathique + réassurance)
-        │   ├── aidant.ts          (8 aides du tableau de bord aidant)
-        │   ├── labyrinthe.ts      (catalogue des ≈ 28 dispositifs)
-        │   └── miseEnRelation.ts  (guichets DILA fictifs, mail, fiche d'appel)
+        │   ├── questions.ts          (script du parcours au clic)
+        │   ├── dialogueVocal.ts      (script vocal empathique, branche labyrinthe)
+        │   ├── renseignementLocal.ts (cadrage + branche renseignement : adaptation logement, recherche locale, contact)
+        │   ├── aidant.ts             (8 aides du tableau de bord aidant)
+        │   ├── labyrinthe.ts         (catalogue des ≈ 28 dispositifs)
+        │   └── miseEnRelation.ts     (guichets DILA fictifs, type Contact, mail, fiche d'appel)
         ├── components/
         │   ├── DemoBanner.tsx
         │   └── Decor.tsx        (décor géométrique URSSAF)
         └── screens/
-            ├── Accueil.tsx        (vitrine publique : hero, drame, solution, transparence)
+            ├── Accueil.tsx          (vitrine publique : hero, drame, solution, transparence)
             ├── ParcoursAssure.tsx
             ├── EspaceAidant.tsx
-            ├── AssistantVocal.tsx (dialogue + restitution + mise en relation jouée)
-            └── Labyrinthe.tsx     (le problème : labyrinthe des aides)
+            ├── AssistantVocal.tsx   (cadrage + 2 branches : renseignement/labyrinthe, recherche locale, mise en relation)
+            ├── DefiTechnique.tsx    (onglet "Le défi" : le problème côté technique)
+            ├── SolutionTechnique.tsx (onglet "Notre solution" : besoins concrets, budget €, KPI)
+            └── Labyrinthe.tsx       (le problème : labyrinthe des aides)
 ```
 
 ---
@@ -195,6 +201,9 @@ recours-autonomie/
 | Navigation par onglets + layout projection paysage | Fait (18/06/2026) |
 | Service de mise en relation joué en fin de vocal (DILA, mail/téléphone, consentement) | Fait (18/06/2026) |
 | ADR-0004 LLM souverain + évolution prompt mise en relation | Fait (18/06/2026) |
+| Assistant vocal : étape de cadrage + branche renseignement (adaptation logement, recherche locale visible) | Fait (18/06/2026) |
+| Onglets décideurs "Le défi" et "Notre solution" (besoins concrets, budget €, KPI) | Fait (18/06/2026) |
+| Docs conduite du changement + défi/solution technique (sources des onglets décideurs) | Fait (18/06/2026) |
 | Repo GitHub + premier commit + push | Fait (17/06/2026) |
 | Déploiement Cloudflare Pages (auto sur push `main`) | Fait, en ligne (17/06/2026). Redéploiement automatique à chaque push |
 | ADR (0001 cible/démonstrateur en priorité) | À faire |

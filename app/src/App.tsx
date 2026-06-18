@@ -6,6 +6,8 @@ import { ParcoursAssure } from '@/screens/ParcoursAssure'
 import { EspaceAidant } from '@/screens/EspaceAidant'
 import { AssistantVocal } from '@/screens/AssistantVocal'
 import { Labyrinthe } from '@/screens/Labyrinthe'
+import { DefiTechnique } from '@/screens/DefiTechnique'
+import { SolutionTechnique } from '@/screens/SolutionTechnique'
 import { cn } from '@/lib/cn'
 import type { Vue } from '@/lib/vue'
 
@@ -15,6 +17,8 @@ import type { Vue } from '@/lib/vue'
 const ONGLETS: { vue: Vue; label: string }[] = [
   { vue: 'accueil', label: 'Accueil' },
   { vue: 'labyrinthe', label: 'Le problème' },
+  { vue: 'defi', label: 'Le défi' },
+  { vue: 'solution', label: 'Notre solution' },
   { vue: 'vocal', label: 'Assistant vocal' },
   { vue: 'aidant', label: 'Espace aidant' },
   { vue: 'assure', label: 'Parcours guidé' },
@@ -33,6 +37,8 @@ export default function App() {
         {vue === 'aidant' && <EspaceAidant />}
         {vue === 'vocal' && <AssistantVocal />}
         {vue === 'labyrinthe' && <Labyrinthe />}
+        {vue === 'defi' && <DefiTechnique onNavigate={setVue} />}
+        {vue === 'solution' && <SolutionTechnique onNavigate={setVue} />}
       </main>
       <Footer />
     </div>

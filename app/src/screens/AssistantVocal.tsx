@@ -6,38 +6,64 @@ import {
   ExternalLink,
   Handshake,
   Info,
+  Lightbulb,
+  ListChecks,
   Loader2,
   Lock,
   Mail,
   MailCheck,
+  MapPin,
   Mic,
   Phone,
   RotateCcw,
+  Search,
   Send,
   TriangleAlert,
   Volume2,
 } from 'lucide-react'
 import { DIALOGUE_VOCAL } from '@/data/dialogueVocal'
-import { ADRESSE_SERVICE, COMMUNE, GUICHETS, MAIL, PHRASE_APPEL } from '@/data/miseEnRelation'
+import { ADRESSE_SERVICE, CONTACT_DOMICILE, type Contact, type Guichet } from '@/data/miseEnRelation'
+import {
+  CADRAGE,
+  CONTACT_ADAPTATION,
+  GARDE_FOU_LOCAL,
+  PISTES_LOCALES,
+  RECHERCHE_LOCALE_ETAPES,
+  RENSEIGNEMENT_TOUR,
+} from '@/data/renseignementLocal'
+import { cn } from '@/lib/cn'
 import { calculerDroits, formaterEuros, type Situation } from '@/lib/moteur'
 
 // Démonstrateur de l'assistant vocal. La personne âgée parle ; l'assistant pose des
 // questions et la "dictée" s'affiche en transcription progressive (effet parole en
 // direct). Tout est scripté : on montre que l'outil comprend une parole spontanée.
 //
-// L'aidant ou le présentateur fait avancer chaque tour : appuyer pour faire "parler"
-// la personne, puis confirmer. Le calcul des montants reste dans le moteur déterministe.
+// Deux parcours jouables, chacun va au bout, après une étape de cadrage :
+//   - "labyrinthe" : faire le point sur tous ses droits (4 questions, moteur, APA + ASPA).
+//   - "renseignement" : une question sur une aide locale, recherche locale visible, puis
+//     mise en relation. Le calcul des montants reste dans le moteur déterministe.
 
-type Phase = 'dialogue' | 'calcul' | 'resultats' | 'mise_en_relation'
+type Parcours = 'labyrinthe' | 'renseignement'
+type Phase =
+  | 'cadrage'
+  | 'dialogue'
+  | 'calcul'
+  | 'resultats'
+  | 'renseignement'
+  | 'recherche_locale'
+  | 'resultats_locaux'
+  | 'mise_en_relation'
 type SousEtape = 'prete' | 'ecoute' | 'comprise'
 
 export function AssistantVocal() {
-  const [phase, setPhase] = useState<Phase>('dialogue')
+  const [parcours, setParcours] = useState<Parcours>('labyrinthe')
+  const [phase, setPhase] = useState<Phase>('cadrage')
   const [tour, setTour] = useState(0)
   const [sousEtape, setSousEtape] = useState<SousEtape>('prete')
   const [chars, setChars] = useState(0)
 
-  const courant = DIALOGUE_VOCAL[tour]
+  const courant = parcours === 'renseignement' ? RENSEIGNEMENT_TOUR : DIALOGUE_VOCAL[tour]
+  const contact = parcours === 'renseignement' ? CONTACT_ADAPTATION : CONTACT_DOMICILE
 
   // Révélation progressive de la dictée, pour l'effet "transcription en direct".
   useEffect(() => {
@@ -51,7 +77,7 @@ export function AssistantVocal() {
     return () => clearTimeout(t)
   }, [sousEtape, chars, courant])
 
-  // Étape moteur visible avant la restitution.
+  // Étape moteur visible avant la restitution (branche labyrinthe).
   useEffect(() => {
     if (phase !== 'calcul') return
     const t = setTimeout(() => setPhase('resultats'), 1900)
@@ -63,7 +89,19 @@ export function AssistantVocal() {
     setSousEtape('ecoute')
   }
 
+  function choisirParcours(p: Parcours) {
+    setParcours(p)
+    setTour(0)
+    setSousEtape('prete')
+    setChars(0)
+    setPhase(p === 'renseignement' ? 'renseignement' : 'dialogue')
+  }
+
   function continuer() {
+    if (parcours === 'renseignement') {
+      setPhase('recherche_locale')
+      return
+    }
     if (tour < DIALOGUE_VOCAL.length - 1) {
       setTour((t) => t + 1)
       setSousEtape('prete')
@@ -74,10 +112,15 @@ export function AssistantVocal() {
   }
 
   function recommencer() {
-    setPhase('dialogue')
+    setParcours('labyrinthe')
+    setPhase('cadrage')
     setTour(0)
     setSousEtape('prete')
     setChars(0)
+  }
+
+  if (phase === 'cadrage') {
+    return <Cadrage onChoisir={choisirParcours} />
   }
 
   if (phase === 'resultats') {
@@ -89,22 +132,44 @@ export function AssistantVocal() {
     )
   }
 
-  if (phase === 'mise_en_relation') {
-    return <MiseEnRelationVocale onRestart={recommencer} />
+  if (phase === 'recherche_locale') {
+    return <RechercheLocale onDone={() => setPhase('resultats_locaux')} />
   }
+
+  if (phase === 'resultats_locaux') {
+    return (
+      <ResultatsLocaux
+        onRestart={recommencer}
+        onMiseEnRelation={() => setPhase('mise_en_relation')}
+      />
+    )
+  }
+
+  if (phase === 'mise_en_relation') {
+    return <MiseEnRelationVocale contact={contact} onRestart={recommencer} />
+  }
+
+  const dernierLabyrinthe = parcours === 'labyrinthe' && tour === DIALOGUE_VOCAL.length - 1
+  const labelSuite =
+    parcours === 'renseignement'
+      ? 'Chercher près de chez moi'
+      : dernierLabyrinthe
+        ? 'Vérifier mes droits'
+        : 'Question suivante'
 
   return (
     <div className="mx-auto w-full max-w-lecture space-y-4">
-      {/* Historique des échanges déjà compris. */}
-      {DIALOGUE_VOCAL.slice(0, tour).map((t) => (
-        <div key={t.champ} className="space-y-2">
-          <BulleAssistant texte={t.assistant} />
-          <BulleParole texte={t.dictee} terminee />
-          <Comprehension texte={t.comprisComme} />
-        </div>
-      ))}
+      {/* Historique des échanges déjà compris (branche labyrinthe). */}
+      {parcours === 'labyrinthe' &&
+        DIALOGUE_VOCAL.slice(0, tour).map((t) => (
+          <div key={t.champ} className="space-y-2">
+            <BulleAssistant texte={t.assistant} />
+            <BulleParole texte={t.dictee} terminee />
+            <Comprehension texte={t.comprisComme} />
+          </div>
+        ))}
 
-      {phase === 'dialogue' && (
+      {(phase === 'dialogue' || phase === 'renseignement') && (
         <div className="space-y-2">
           <BulleAssistant texte={courant.assistant} />
 
@@ -130,7 +195,7 @@ export function AssistantVocal() {
                 onClick={continuer}
                 className="inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-etat-blue-hover"
               >
-                {tour < DIALOGUE_VOCAL.length - 1 ? 'Question suivante' : 'Vérifier mes droits'}
+                {labelSuite}
                 <ArrowRight size={20} aria-hidden />
               </button>
             )}
@@ -139,6 +204,31 @@ export function AssistantVocal() {
       )}
 
       {phase === 'calcul' && <EtapeMoteur />}
+    </div>
+  )
+}
+
+// Étape de cadrage : l'assistant demande ce que la personne vient chercher, puis on
+// branche vers le bon parcours. Piloté par le présentateur, comme le reste de la démo.
+function Cadrage({ onChoisir }: { onChoisir: (p: Parcours) => void }) {
+  return (
+    <div className="mx-auto w-full max-w-lecture space-y-4">
+      <BulleAssistant texte={CADRAGE.assistant} />
+      <BulleInfo texte={CADRAGE.rassurance} />
+      <div className="grid gap-3 pl-10 sm:grid-cols-2">
+        <BoutonCanal
+          icone={Search}
+          titre={CADRAGE.choix.renseignement.titre}
+          sous={CADRAGE.choix.renseignement.sous}
+          onClick={() => onChoisir('renseignement')}
+        />
+        <BoutonCanal
+          icone={ListChecks}
+          titre={CADRAGE.choix.labyrinthe.titre}
+          sous={CADRAGE.choix.labyrinthe.sous}
+          onClick={() => onChoisir('labyrinthe')}
+        />
+      </div>
     </div>
   )
 }
@@ -257,6 +347,137 @@ function EtapeMoteur() {
   )
 }
 
+// ── Branche renseignement : recherche locale visible. ────────────────────────
+// L'assistant vérifie l'existence d'aides locales et résout le bon guichet. Dans la
+// cible : recherche web bornée à une allowlist + annuaire DILA. Ici, scripté.
+function RechercheLocale({ onDone }: { onDone: () => void }) {
+  const [etape, setEtape] = useState(0)
+
+  useEffect(() => {
+    if (etape >= RECHERCHE_LOCALE_ETAPES.length) {
+      const fin = setTimeout(onDone, 800)
+      return () => clearTimeout(fin)
+    }
+    const t = setTimeout(() => setEtape((e) => e + 1), 1100)
+    return () => clearTimeout(t)
+  }, [etape, onDone])
+
+  return (
+    <div className="mx-auto w-full max-w-lecture space-y-4">
+      <div
+        aria-live="polite"
+        className="rounded-lg border border-etat-blue-light bg-etat-blue-light px-4 py-4"
+      >
+        <p className="flex items-center gap-2 font-semibold text-etat-blue">
+          <Search size={20} className="animate-pulse" aria-hidden />
+          Je cherche près de chez vous, un instant…
+        </p>
+        <ul className="mt-3 space-y-2">
+          {RECHERCHE_LOCALE_ETAPES.map((e, i) => (
+            <li
+              key={i}
+              className={cn(
+                'flex items-start gap-2 text-sm',
+                i < etape ? 'text-etat-ink' : 'text-etat-grey/60',
+              )}
+            >
+              {i < etape ? (
+                <BadgeCheck size={16} className="mt-0.5 shrink-0 text-teal" aria-hidden />
+              ) : (
+                <Loader2
+                  size={16}
+                  className={cn(
+                    'mt-0.5 shrink-0',
+                    i === etape ? 'animate-spin text-etat-blue' : 'text-etat-border',
+                  )}
+                  aria-hidden
+                />
+              )}
+              {e}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  )
+}
+
+function ResultatsLocaux({
+  onRestart,
+  onMiseEnRelation,
+}: {
+  onRestart: () => void
+  onMiseEnRelation: () => void
+}) {
+  const annonceRef = useRef<HTMLParagraphElement>(null)
+  useEffect(() => {
+    annonceRef.current?.focus()
+  }, [])
+
+  return (
+    <div className="mx-auto w-full max-w-3xl space-y-5">
+      <div className="rounded-xl border border-etat-blue bg-etat-blue p-5 text-white">
+        <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/80">
+          <Volume2 size={16} aria-hidden />
+          L’assistant vous répond
+        </p>
+        <p ref={annonceRef} tabIndex={-1} className="mt-2 text-lg outline-none">
+          Bonne nouvelle Jeanne : oui, des aides existent pour adapter votre salle de bain. Voici ce
+          que j’ai trouvé. Je reste prudent, et je vous explique pourquoi.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {PISTES_LOCALES.map((p) => (
+          <article key={p.nom} className="rounded-xl border border-etat-border bg-white p-5 shadow-carte">
+            <h3 className="flex items-start gap-2 text-lg font-bold text-etat-ink">
+              <Lightbulb size={20} className="mt-0.5 shrink-0 text-or" aria-hidden />
+              {p.nom}
+            </h3>
+            <p className="mt-2 text-etat-ink">{p.detail}</p>
+            <p className="mt-2 text-sm text-etat-grey">Piste à vérifier · source : {p.source}</p>
+          </article>
+        ))}
+      </div>
+
+      <div className="flex items-start gap-3 rounded-xl border-l-4 border-estim bg-estim-bg p-4">
+        <TriangleAlert size={20} className="mt-0.5 shrink-0 text-estim" aria-hidden />
+        <p className="text-etat-ink">{GARDE_FOU_LOCAL}</p>
+      </div>
+
+      <div className="rounded-xl border-l-4 border-teal bg-teal-bg p-5">
+        <p className="flex items-center gap-2 font-bold text-teal-hover">
+          <MapPin size={20} aria-hidden />
+          J’ai trouvé qui peut vous accompagner
+        </p>
+        <p className="mt-1 text-etat-ink">
+          Près de chez vous, France Services monte le dossier MaPrimeAdapt’ gratuitement, et le CCAS
+          connaît les aides locales. Je peux préparer votre prise de contact.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-3 pt-1">
+        <button
+          type="button"
+          onClick={onMiseEnRelation}
+          className="inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-etat-blue-hover"
+        >
+          <Handshake size={20} aria-hidden />
+          Contacter le bon guichet
+        </button>
+        <button
+          type="button"
+          onClick={onRestart}
+          className="inline-flex items-center gap-2 rounded-lg border-2 border-etat-blue px-5 py-3 font-semibold text-etat-blue transition-colors hover:bg-etat-blue-light"
+        >
+          <RotateCcw size={18} aria-hidden />
+          Refaire l’échange vocal
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function RestitutionVocale({
   onRestart,
   onMiseEnRelation,
@@ -322,9 +543,10 @@ function RestitutionVocale({
 // ── Service de mise en relation, joué jusqu'au bout. ─────────────────────────
 // Lève le frein du passage à l'acte : on résout le bon guichet (annuaire DILA en
 // cible) et on produit un livrable de contact, fiche d'appel ou message minimisé.
+// Le contact passé dépend du parcours (maintien à domicile ou adaptation du logement).
 type EtapeMR = 'canal' | 'fiche_appel' | 'mail_consentement' | 'mail_envoye'
 
-function MiseEnRelationVocale({ onRestart }: { onRestart: () => void }) {
+function MiseEnRelationVocale({ contact, onRestart }: { contact: Contact; onRestart: () => void }) {
   const [etape, setEtape] = useState<EtapeMR>('canal')
 
   return (
@@ -359,10 +581,20 @@ function MiseEnRelationVocale({ onRestart }: { onRestart: () => void }) {
         </div>
       )}
 
-      {etape === 'fiche_appel' && <FicheAppel onMail={() => setEtape('mail_consentement')} />}
+      {etape === 'fiche_appel' && (
+        <FicheAppel
+          guichets={contact.guichets}
+          phrase={contact.phrase}
+          onMail={() => setEtape('mail_consentement')}
+        />
+      )}
 
       {(etape === 'mail_consentement' || etape === 'mail_envoye') && (
-        <BlocMail envoye={etape === 'mail_envoye'} onEnvoyer={() => setEtape('mail_envoye')} />
+        <BlocMail
+          mail={contact.mail}
+          envoye={etape === 'mail_envoye'}
+          onEnvoyer={() => setEtape('mail_envoye')}
+        />
       )}
 
       {etape !== 'canal' && <NoteMinimisation />}
@@ -407,7 +639,15 @@ function BoutonCanal({
   )
 }
 
-function FicheAppel({ onMail }: { onMail: () => void }) {
+function FicheAppel({
+  guichets,
+  phrase,
+  onMail,
+}: {
+  guichets: Guichet[]
+  phrase: string
+  onMail: () => void
+}) {
   return (
     <div className="space-y-4">
       <Comprehension texte="Très bien, le téléphone est souvent le plus simple. Voici votre fiche d’appel, prête à utiliser." />
@@ -417,7 +657,7 @@ function FicheAppel({ onMail }: { onMail: () => void }) {
           Votre fiche d’appel
         </h3>
         <ol className="mt-4 space-y-3">
-          {GUICHETS.map((g, i) => (
+          {guichets.map((g, i) => (
             <li key={g.nom} className="rounded-lg border border-etat-border p-4">
               <div className="flex items-start gap-3">
                 <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-etat-blue text-sm font-bold text-white">
@@ -439,7 +679,7 @@ function FicheAppel({ onMail }: { onMail: () => void }) {
 
         <div className="mt-4 rounded-lg bg-etat-blue-light p-4">
           <p className="font-semibold text-etat-blue">Une phrase pour commencer :</p>
-          <p className="mt-1 italic text-etat-ink">«&nbsp;{PHRASE_APPEL}&nbsp;»</p>
+          <p className="mt-1 italic text-etat-ink">«&nbsp;{phrase}&nbsp;»</p>
         </div>
         <p className="mt-3 text-sm text-etat-grey">
           Pensez à noter le nom de la personne au bout du fil et la date de votre appel.
@@ -458,16 +698,24 @@ function FicheAppel({ onMail }: { onMail: () => void }) {
   )
 }
 
-function BlocMail({ envoye, onEnvoyer }: { envoye: boolean; onEnvoyer: () => void }) {
+function BlocMail({
+  mail,
+  envoye,
+  onEnvoyer,
+}: {
+  mail: { destinataire: string; objet: string; corps: string }
+  envoye: boolean
+  onEnvoyer: () => void
+}) {
   return (
     <div className="space-y-4">
       <Comprehension texte="Avec plaisir. Voici le message que nous enverrions en votre nom. Il ne dit rien de votre santé ni de vos revenus." />
       <div className="rounded-xl border border-etat-border bg-white p-5 shadow-carte">
         <p className="text-sm font-semibold uppercase tracking-wide text-etat-grey">
-          À : {MAIL.destinataire}
+          À : {mail.destinataire}
         </p>
-        <p className="mt-1 font-bold text-etat-ink">{MAIL.objet}</p>
-        <pre className="mt-3 whitespace-pre-wrap font-sans text-etat-ink">{MAIL.corps}</pre>
+        <p className="mt-1 font-bold text-etat-ink">{mail.objet}</p>
+        <pre className="mt-3 whitespace-pre-wrap font-sans text-etat-ink">{mail.corps}</pre>
       </div>
 
       {envoye ? (
@@ -476,7 +724,7 @@ function BlocMail({ envoye, onEnvoyer }: { envoye: boolean; onEnvoyer: () => voi
           <div>
             <p className="font-bold text-valide">Message envoyé en votre nom</p>
             <p className="text-sm text-etat-ink">
-              Envoyé depuis notre adresse de service ({ADRESSE_SERVICE}). Le CCAS de {COMMUNE} vous
+              Envoyé depuis notre adresse de service ({ADRESSE_SERVICE}). Le guichet vous
               recontactera. Vous n’avez rien d’autre à faire.
             </p>
           </div>
