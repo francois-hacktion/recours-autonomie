@@ -11,8 +11,10 @@
 Navigation par **onglets** en haut de page (barre sticky dans `app/src/App.tsx`), un onglet par
 écran, dans l'ordre de présentation, la démo vocale étant le cœur de l'offre :
 `Accueil · Le problème · Assistant vocal · Espace aidant · Parcours guidé · Le défi technique ·
-Notre solution`. Navigation par état en mémoire (`useState<Vue>`), pas de routing, pas d'URL. Type
-des vues dans `app/src/lib/vue.ts` : `accueil | assure | aidant | vocal | labyrinthe | defi | solution`.
+Notre solution`. Navigation par état en mémoire (`useState<Vue>`), sans routing serveur ni librairie.
+Un **lien direct** vers un onglet reste possible via le hash (`#vocal`) ou le paramètre (`?vue=vocal`),
+lu au chargement et synchronisé à chaque changement d'onglet (boutons précédent / suivant suivis).
+Type des vues dans `app/src/lib/vue.ts` : `accueil | assure | aidant | vocal | labyrinthe | defi | solution`.
 
 Les écrans qui montrent la future app sont pensés **plein écran paysage** pour la projection
 (largeur `max-w-projection`, token Tailwind).
