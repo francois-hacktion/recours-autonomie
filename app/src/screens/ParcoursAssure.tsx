@@ -196,7 +196,7 @@ function EtapeMoteur() {
       <div>
         <p className="font-semibold text-etat-blue">Le moteur de calcul vérifie vos droits…</p>
         <p className="mt-1 text-sm text-etat-ink">
-          Vos réponses sont transmises au moteur de droits. L’assistant n’invente aucun montant :
+          Vos réponses sont transmises au moteur de droits. Silneo n’invente aucun montant :
           tous les chiffres viennent du moteur.
         </p>
       </div>

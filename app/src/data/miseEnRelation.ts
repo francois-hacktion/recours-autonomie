@@ -24,12 +24,43 @@ export interface Guichet {
   horaires: string
 }
 
-// Livrable de contact pour un besoin donné : guichets résolus, phrase d'appel, mail
-// minimisé. Selon la branche du parcours vocal, on passe le contact adapté au besoin.
+// Identité de la personne, collectée au début de l'échange (prénom, nom, moyen de
+// rappel). Sert à rendre la mise en relation crédible : le mail est signé et donne un
+// numéro de rappel réel. Jamais de donnée de santé ici.
+export interface Identite {
+  prenom: string
+  nom: string
+}
+
+// Livrable de contact pour un besoin donné : guichets résolus, phrase d'appel, et de
+// quoi composer le mail minimisé. Selon la branche du parcours vocal, on passe le
+// contact adapté au besoin.
 export interface Contact {
   guichets: Guichet[]
   phrase: string
-  mail: { destinataire: string; objet: string; corps: string }
+  destinataire: string
+  objet: string
+  besoin: string // une phrase : ce que la personne cherche, reprise dans le corps du mail
+}
+
+// Construit le corps du mail minimisé vers le guichet : l'identité (prénom, nom) et le
+// numéro de rappel donné par la personne juste avant l'envoi. Aucune donnée de santé,
+// GIR ni montant ne figure dans ce message.
+export function construireMail(
+  identite: Identite,
+  contact: Contact,
+  commune: string,
+  telephone: string,
+): string {
+  return `Bonjour,
+
+Je vous contacte pour moi-même. J’habite à ${commune}.
+${contact.besoin}
+
+Pourriez-vous me recontacter ? Vous pouvez me joindre au ${telephone}, de préférence le matin.
+
+Avec mes remerciements,
+${identite.prenom} ${identite.nom}`
 }
 
 export const COMMUNE = 'Roncourt-les-Tilleuls'
@@ -74,26 +105,14 @@ export const GUICHETS: Guichet[] = [
 export const PHRASE_APPEL =
   'Bonjour, j’habite à Roncourt-les-Tilleuls. Je voudrais savoir quelles aides existent pour rester chez moi, et être aidée pour les démarches.'
 
-// Gabarit du message (sortie A du prompt). Minimisé : aucune donnée de santé, GIR,
-// ressource ou numéro de sécurité sociale. Destinataire principal : le CCAS.
-export const MAIL = {
-  destinataire: 'ccas@roncourt-les-tilleuls.fr',
-  objet: 'Demande d’accompagnement pour les aides d’une personne âgée, Roncourt-les-Tilleuls',
-  corps: `Bonjour,
-
-Je vous contacte pour moi-même. J’habite à Roncourt-les-Tilleuls.
-Je cherche à savoir quelles aides peuvent m’aider à rester à domicile, et je souhaite être accompagnée dans les démarches.
-
-Pourriez-vous me recontacter ? Vous pouvez me joindre au 03 21 55 00 00, de préférence le matin.
-
-Avec mes remerciements,
-Jeanne D.`,
-}
-
 // Contact par défaut, pour la branche "faire le point sur ses droits" (maintien à
-// domicile). La branche "renseignement" passe un contact propre à son besoin.
+// domicile). Le corps du mail est construit à la volée avec l'identité collectée
+// (voir construireMail). La branche "renseignement" passe un contact propre à son besoin.
 export const CONTACT_DOMICILE: Contact = {
   guichets: GUICHETS,
   phrase: PHRASE_APPEL,
-  mail: MAIL,
+  destinataire: 'ccas@roncourt-les-tilleuls.fr',
+  objet: `Demande d’accompagnement pour les aides d’une personne âgée, ${COMMUNE}`,
+  besoin:
+    'Je cherche à savoir quelles aides peuvent m’aider à rester à domicile, et je souhaite être accompagnée dans les démarches.',
 }

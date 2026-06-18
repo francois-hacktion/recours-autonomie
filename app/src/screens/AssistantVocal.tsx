@@ -22,14 +22,25 @@ import {
   Volume2,
 } from 'lucide-react'
 import { DIALOGUE_VOCAL } from '@/data/dialogueVocal'
-import { ADRESSE_SERVICE, CONTACT_DOMICILE, type Contact, type Guichet } from '@/data/miseEnRelation'
+import {
+  ADRESSE_SERVICE,
+  COMMUNE,
+  CONTACT_DOMICILE,
+  construireMail,
+  type Contact,
+  type Guichet,
+} from '@/data/miseEnRelation'
 import {
   CADRAGE,
   CONTACT_ADAPTATION,
+  EMAIL_DEFAUT,
   GARDE_FOU_LOCAL,
+  IDENTITE,
+  IDENTITE_TOURS,
   PISTES_LOCALES,
   RECHERCHE_LOCALE_ETAPES,
   RENSEIGNEMENT_TOUR,
+  TELEPHONE_DEFAUT,
 } from '@/data/renseignementLocal'
 import { cn } from '@/lib/cn'
 import { calculerDroits, formaterEuros, type Situation } from '@/lib/moteur'
@@ -45,6 +56,7 @@ import { calculerDroits, formaterEuros, type Situation } from '@/lib/moteur'
 
 type Parcours = 'labyrinthe' | 'renseignement'
 type Phase =
+  | 'identite'
   | 'cadrage'
   | 'dialogue'
   | 'calcul'
@@ -57,12 +69,17 @@ type SousEtape = 'prete' | 'ecoute' | 'comprise'
 
 export function AssistantVocal() {
   const [parcours, setParcours] = useState<Parcours>('labyrinthe')
-  const [phase, setPhase] = useState<Phase>('cadrage')
+  const [phase, setPhase] = useState<Phase>('identite')
   const [tour, setTour] = useState(0)
   const [sousEtape, setSousEtape] = useState<SousEtape>('prete')
   const [chars, setChars] = useState(0)
 
-  const courant = parcours === 'renseignement' ? RENSEIGNEMENT_TOUR : DIALOGUE_VOCAL[tour]
+  const courant =
+    phase === 'identite'
+      ? IDENTITE_TOURS[tour]
+      : parcours === 'renseignement'
+        ? RENSEIGNEMENT_TOUR
+        : DIALOGUE_VOCAL[tour]
   const contact = parcours === 'renseignement' ? CONTACT_ADAPTATION : CONTACT_DOMICILE
 
   // Révélation progressive de la dictée, pour l'effet "transcription en direct".
@@ -98,6 +115,19 @@ export function AssistantVocal() {
   }
 
   function continuer() {
+    if (phase === 'identite') {
+      if (tour < IDENTITE_TOURS.length - 1) {
+        setTour((t) => t + 1)
+        setSousEtape('prete')
+        setChars(0)
+      } else {
+        setTour(0)
+        setSousEtape('prete')
+        setChars(0)
+        setPhase('cadrage')
+      }
+      return
+    }
     if (parcours === 'renseignement') {
       setPhase('recherche_locale')
       return
@@ -113,7 +143,7 @@ export function AssistantVocal() {
 
   function recommencer() {
     setParcours('labyrinthe')
-    setPhase('cadrage')
+    setPhase('identite')
     setTour(0)
     setSousEtape('prete')
     setChars(0)
@@ -151,25 +181,35 @@ export function AssistantVocal() {
 
   const dernierLabyrinthe = parcours === 'labyrinthe' && tour === DIALOGUE_VOCAL.length - 1
   const labelSuite =
-    parcours === 'renseignement'
-      ? 'Chercher près de chez moi'
-      : dernierLabyrinthe
-        ? 'Vérifier mes droits'
-        : 'Question suivante'
+    phase === 'identite'
+      ? tour < IDENTITE_TOURS.length - 1
+        ? 'Continuer'
+        : 'C’est parti'
+      : parcours === 'renseignement'
+        ? 'Chercher près de chez moi'
+        : dernierLabyrinthe
+          ? 'Vérifier mes droits'
+          : 'Question suivante'
+
+  // Historique des échanges déjà compris : l'identité, ou les questions du parcours guidé.
+  const historique =
+    phase === 'identite'
+      ? IDENTITE_TOURS.slice(0, tour)
+      : phase === 'dialogue'
+        ? DIALOGUE_VOCAL.slice(0, tour)
+        : []
 
   return (
     <div className="mx-auto w-full max-w-lecture space-y-4">
-      {/* Historique des échanges déjà compris (branche labyrinthe). */}
-      {parcours === 'labyrinthe' &&
-        DIALOGUE_VOCAL.slice(0, tour).map((t) => (
-          <div key={t.champ} className="space-y-2">
-            <BulleAssistant texte={t.assistant} />
-            <BulleParole texte={t.dictee} terminee />
-            <Comprehension texte={t.comprisComme} />
-          </div>
-        ))}
+      {historique.map((t, i) => (
+        <div key={i} className="space-y-2">
+          <BulleAssistant texte={t.assistant} />
+          <BulleParole texte={t.dictee} terminee />
+          <Comprehension texte={t.comprisComme} />
+        </div>
+      ))}
 
-      {(phase === 'dialogue' || phase === 'renseignement') && (
+      {(phase === 'identite' || phase === 'dialogue' || phase === 'renseignement') && (
         <div className="space-y-2">
           <BulleAssistant texte={courant.assistant} />
 
@@ -419,7 +459,7 @@ function ResultatsLocaux({
       <div className="rounded-xl border border-etat-blue bg-etat-blue p-5 text-white">
         <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/80">
           <Volume2 size={16} aria-hidden />
-          L’assistant vous répond
+          Silneo vous répond
         </p>
         <p ref={annonceRef} tabIndex={-1} className="mt-2 text-lg outline-none">
           Bonne nouvelle Jeanne : oui, des aides existent pour adapter votre salle de bain. Voici ce
@@ -494,6 +534,30 @@ function RestitutionVocale({
   const resultats = calculerDroits(situation)
   const ouverts = resultats.filter((r) => r.eligible)
 
+  // Récapitulatif que la personne peut se faire envoyer par mail. Il lui est destiné à
+  // elle (pas à un guichet), donc il peut contenir les montants estimés.
+  const lignesRecap = ouverts
+    .map((r) => {
+      const montant =
+        r.montantMensuel !== null
+          ? `${r.fiabilite === 'calcul_national' ? 'jusqu’à ' : '≈ '}${formaterEuros(r.montantMensuel)} / mois`
+          : 'montant à évaluer'
+      const fiab =
+        r.fiabilite === 'calcul_national' ? 'montant national fiable' : 'estimation à confirmer'
+      return `• ${r.libelle} : ${montant} (${fiab})\n  Démarche : ${r.demarche.texte}`
+    })
+    .join('\n\n')
+  const corpsRecap = `Bonjour ${IDENTITE.prenom},
+
+Voici le récapitulatif de vos droits possibles, d’après notre échange :
+
+${lignesRecap}
+
+Ce récapitulatif est indicatif : seuls les guichets indiqués peuvent confirmer vos droits et les montants exacts.
+
+Prenez soin de vous,
+Silneo, votre assistant`
+
   // Petit accusé "à voix haute" en tête de restitution.
   const annonceRef = useRef<HTMLParagraphElement>(null)
   useEffect(() => {
@@ -505,7 +569,7 @@ function RestitutionVocale({
       <div className="rounded-xl border border-etat-blue bg-etat-blue p-5 text-white">
         <p className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-white/80">
           <Volume2 size={16} aria-hidden />
-          L’assistant vous répond
+          Silneo vous répond
         </p>
         <p ref={annonceRef} tabIndex={-1} className="mt-2 text-lg outline-none">
           Merci Jeanne, et bravo d’être allée au bout 🤍 D’après ce que vous m’avez confié, vous
@@ -517,6 +581,8 @@ function RestitutionVocale({
       {resultats.map((r) => (
         <CarteResultatVocal key={r.aide} r={r} />
       ))}
+
+      <RecapParMail corps={corpsRecap} />
 
       <div className="flex flex-wrap gap-3 pt-1">
         <button
@@ -540,14 +606,81 @@ function RestitutionVocale({
   )
 }
 
+// Récapitulatif envoyé à la personne elle-même (pas à un guichet) : il peut donc
+// contenir les montants estimés. L'e-mail n'est demandé que si elle veut le recevoir.
+function RecapParMail({ corps }: { corps: string }) {
+  const [ouvert, setOuvert] = useState(false)
+  const [email, setEmail] = useState(EMAIL_DEFAUT)
+  const [envoye, setEnvoye] = useState(false)
+
+  if (!ouvert) {
+    return (
+      <button
+        type="button"
+        onClick={() => setOuvert(true)}
+        className="inline-flex items-center gap-2 rounded-lg border-2 border-etat-blue px-5 py-3 font-semibold text-etat-blue transition-colors hover:bg-etat-blue-light"
+      >
+        <Mail size={18} aria-hidden />
+        Recevoir mon récapitulatif par mail
+      </button>
+    )
+  }
+
+  return (
+    <div className="space-y-4 rounded-xl border border-etat-border bg-white p-5 shadow-carte">
+      <Comprehension texte="Bien sûr. Je vous envoie ce récapitulatif et les montants estimés, pour que vous gardiez tout par écrit, à votre rythme." />
+      <pre className="whitespace-pre-wrap rounded-lg bg-etat-bg p-4 font-sans text-sm text-etat-ink">
+        {corps}
+      </pre>
+
+      {envoye ? (
+        <div className="flex items-start gap-3 rounded-xl border border-valide/40 bg-valide-bg p-4">
+          <MailCheck size={22} className="mt-0.5 shrink-0 text-valide" aria-hidden />
+          <div>
+            <p className="font-bold text-valide">Récapitulatif envoyé</p>
+            <p className="text-sm text-etat-ink">
+              Vous le recevrez à {email}. Il est à vous : relisez-le tranquillement, ou montrez-le à
+              un proche.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div>
+          <label htmlFor="email-recap" className="block font-semibold text-etat-ink">
+            Votre adresse e-mail
+          </label>
+          <input
+            id="email-recap"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="mt-2 w-full rounded-lg border border-etat-border px-4 py-3 text-lg text-etat-ink focus:border-etat-blue focus:outline-none focus:ring-2 focus:ring-etat-blue/30"
+          />
+          <button
+            type="button"
+            onClick={() => setEnvoye(true)}
+            className="mt-3 inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 font-semibold text-white transition-colors hover:bg-etat-blue-hover"
+          >
+            <Send size={18} aria-hidden />
+            M’envoyer le récapitulatif
+          </button>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Service de mise en relation, joué jusqu'au bout. ─────────────────────────
 // Lève le frein du passage à l'acte : on résout le bon guichet (annuaire DILA en
 // cible) et on produit un livrable de contact, fiche d'appel ou message minimisé.
 // Le contact passé dépend du parcours (maintien à domicile ou adaptation du logement).
-type EtapeMR = 'canal' | 'fiche_appel' | 'mail_consentement' | 'mail_envoye'
+type EtapeMR = 'canal' | 'fiche_appel' | 'mail_numero' | 'mail_consentement' | 'mail_envoye'
 
 function MiseEnRelationVocale({ contact, onRestart }: { contact: Contact; onRestart: () => void }) {
   const [etape, setEtape] = useState<EtapeMR>('canal')
+  // Le numéro de rappel n'est demandé qu'ici, et seulement si la personne choisit l'envoi
+  // du message par le service. Pré-rempli pour la démo, modifiable.
+  const [telephone, setTelephone] = useState(TELEPHONE_DEFAUT)
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-5">
@@ -576,7 +709,7 @@ function MiseEnRelationVocale({ contact, onRestart }: { contact: Contact; onRest
             icone={Mail}
             titre="Par message"
             sous="Nous l’envoyons pour vous"
-            onClick={() => setEtape('mail_consentement')}
+            onClick={() => setEtape('mail_numero')}
           />
         </div>
       )}
@@ -585,13 +718,22 @@ function MiseEnRelationVocale({ contact, onRestart }: { contact: Contact; onRest
         <FicheAppel
           guichets={contact.guichets}
           phrase={contact.phrase}
-          onMail={() => setEtape('mail_consentement')}
+          onMail={() => setEtape('mail_numero')}
+        />
+      )}
+
+      {etape === 'mail_numero' && (
+        <CollecteNumero
+          valeur={telephone}
+          onChange={setTelephone}
+          onValider={() => setEtape('mail_consentement')}
         />
       )}
 
       {(etape === 'mail_consentement' || etape === 'mail_envoye') && (
         <BlocMail
-          mail={contact.mail}
+          contact={contact}
+          telephone={telephone}
           envoye={etape === 'mail_envoye'}
           onEnvoyer={() => setEtape('mail_envoye')}
         />
@@ -698,24 +840,66 @@ function FicheAppel({
   )
 }
 
-function BlocMail({
-  mail,
-  envoye,
-  onEnvoyer,
+// Étape "numéro de rappel", jouée seulement quand la personne confie l'envoi du message
+// au service. Le numéro ne sert qu'à ce message, on le redit clairement.
+function CollecteNumero({
+  valeur,
+  onChange,
+  onValider,
 }: {
-  mail: { destinataire: string; objet: string; corps: string }
-  envoye: boolean
-  onEnvoyer: () => void
+  valeur: string
+  onChange: (v: string) => void
+  onValider: () => void
 }) {
   return (
     <div className="space-y-4">
-      <Comprehension texte="Avec plaisir. Voici le message que nous enverrions en votre nom. Il ne dit rien de votre santé ni de vos revenus." />
+      <Comprehension texte="Avec plaisir. Pour que le guichet puisse vous rappeler, à quel numéro peut-on vous joindre ? Il n’apparaîtra que dans ce message." />
+      <div className="rounded-xl border border-etat-border bg-white p-5 shadow-carte">
+        <label htmlFor="tel-rappel" className="block font-semibold text-etat-ink">
+          Votre numéro de téléphone
+        </label>
+        <input
+          id="tel-rappel"
+          type="tel"
+          value={valeur}
+          onChange={(e) => onChange(e.target.value)}
+          className="mt-2 w-full rounded-lg border border-etat-border px-4 py-3 text-lg text-etat-ink focus:border-etat-blue focus:outline-none focus:ring-2 focus:ring-etat-blue/30"
+        />
+        <button
+          type="button"
+          onClick={onValider}
+          className="mt-3 inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 font-semibold text-white transition-colors hover:bg-etat-blue-hover"
+        >
+          Continuer
+          <ArrowRight size={18} aria-hidden />
+        </button>
+      </div>
+    </div>
+  )
+}
+
+function BlocMail({
+  contact,
+  telephone,
+  envoye,
+  onEnvoyer,
+}: {
+  contact: Contact
+  telephone: string
+  envoye: boolean
+  onEnvoyer: () => void
+}) {
+  // Le corps est composé à la volée : identité collectée au début + numéro donné à l'instant.
+  const corps = construireMail(IDENTITE, contact, COMMUNE, telephone)
+  return (
+    <div className="space-y-4">
+      <Comprehension texte="Avec plaisir. Voici le message que nous enverrions en votre nom. Il reprend vos coordonnées, mais ne dit rien de votre santé ni de vos revenus." />
       <div className="rounded-xl border border-etat-border bg-white p-5 shadow-carte">
         <p className="text-sm font-semibold uppercase tracking-wide text-etat-grey">
-          À : {mail.destinataire}
+          À : {contact.destinataire}
         </p>
-        <p className="mt-1 font-bold text-etat-ink">{mail.objet}</p>
-        <pre className="mt-3 whitespace-pre-wrap font-sans text-etat-ink">{mail.corps}</pre>
+        <p className="mt-1 font-bold text-etat-ink">{contact.objet}</p>
+        <pre className="mt-3 whitespace-pre-wrap font-sans text-etat-ink">{corps}</pre>
       </div>
 
       {envoye ? (

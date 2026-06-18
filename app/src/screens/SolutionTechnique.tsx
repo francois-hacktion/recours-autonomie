@@ -33,7 +33,7 @@ const APPROCHE = [
   },
   {
     icone: Handshake,
-    titre: 'L’assistant oriente',
+    titre: 'Silneo oriente',
     texte: 'Il dialogue en langage clair, vulgarise, et prépare le contact avec le bon guichet (annuaire DILA).',
   },
   {
@@ -178,7 +178,7 @@ export function SolutionTechnique({ onNavigate }: { onNavigate: (vue: Vue) => vo
 
       {/* NOTRE APPROCHE EN BREF */}
       <section>
-        <SectionTitre eyebrow="Notre approche" titre="Le moteur calcule, l’assistant oriente" />
+        <SectionTitre eyebrow="Notre approche" titre="Le moteur calcule, Silneo oriente" />
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           {APPROCHE.map((a) => {
             const Icone = a.icone
@@ -334,7 +334,7 @@ export function SolutionTechnique({ onNavigate }: { onNavigate: (vue: Vue) => vo
           onClick={() => onNavigate('vocal')}
           className="mt-6 inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3 text-lg font-semibold text-etat-blue transition-colors hover:bg-etat-bg"
         >
-          🎙️ Voir l’assistant en action
+          🎙️ Voir Silneo en action
           <ArrowRight size={20} aria-hidden />
         </button>
       </section>

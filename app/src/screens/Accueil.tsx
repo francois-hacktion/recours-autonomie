@@ -30,7 +30,7 @@ const DEMOS: Demo[] = [
     titre: 'Assistant vocal',
     pour: 'Pour qui n’aime pas les écrans',
     texte:
-      'La personne âgée parle, l’assistant comprend, calcule ses droits et prépare le contact avec le bon guichet.',
+      'La personne âgée parle, Silneo comprend, fait calculer ses droits et prépare le contact avec le bon guichet.',
     accent: 'teal',
   },
   {
@@ -70,7 +70,7 @@ const PILIERS = [
     emoji: '💬',
     titre: 'Une conversation, pas un formulaire',
     texte:
-      'L’assistant écoute, reçoit l’émotion et explique en langage clair, à la voix ou au clic. Aucun mur de capture, aucune donnée revendue.',
+      'Silneo écoute, reçoit l’émotion et explique en langage clair, à la voix ou au clic. Aucun mur de capture, aucune donnée revendue.',
   },
   {
     emoji: '🤝',
@@ -118,7 +118,7 @@ export function Accueil({ onNavigate }: { onNavigate: (vue: Vue) => void }) {
               onClick={() => onNavigate('vocal')}
               className="inline-flex items-center gap-2 rounded-lg bg-etat-blue px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-etat-blue-hover"
             >
-              🎙️ Essayer l’assistant vocal
+              🎙️ Parler à Silneo
               <ArrowRight size={20} aria-hidden />
             </button>
             <button
@@ -181,7 +181,7 @@ export function Accueil({ onNavigate }: { onNavigate: (vue: Vue) => void }) {
           <p className="mt-3 max-w-3xl text-lg">
             L’intelligence artificielle est souveraine (Albert API, opérée par l’État), hébergée en
             France sur infrastructure qualifiée, et les données ne quittent pas le territoire.
-            Surtout, <strong>l’assistant ne calcule jamais un droit</strong> : il dialogue et
+            Surtout, <strong>Silneo ne calcule jamais un droit</strong> : il dialogue et
             oriente, le calcul reste à un moteur public auditable.
           </p>
         </div>

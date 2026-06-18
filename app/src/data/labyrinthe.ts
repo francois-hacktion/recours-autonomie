@@ -74,7 +74,7 @@ export const CATALOGUE: AideCatalogue[] = [
 // Libellés et sémantique d'affichage des niveaux de certitude.
 export const CERTITUDE_LABEL: Record<Certitude, string> = {
   auto: 'Calculé automatiquement',
-  evaluation: 'Évaluation requise (GIR, plan d’aide…)',
+  evaluation: 'Évaluations requises (GIR, plan d’aide…)',
   cas_par_cas: 'Décrit, attribué au cas par cas',
   non_centralise: 'Hors de tout moteur, non centralisé',
 }

@@ -25,7 +25,7 @@ const COUCHES: { valeur: number; titre: string; texte: string }[] = [
   },
   {
     valeur: PAR_CERTITUDE.evaluation ?? 0,
-    titre: 'Évaluation requise',
+    titre: 'Évaluations requises',
     texte: 'GIR, plan d’aide : il faut une évaluation départementale pour trancher.',
   },
   {

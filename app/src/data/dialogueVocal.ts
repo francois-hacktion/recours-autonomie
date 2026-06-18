@@ -29,7 +29,7 @@ export const DIALOGUE_VOCAL: TourVocal[] = [
   {
     champ: 'residence',
     assistant:
-      'Bonjour Jeanne 👋 Je suis là pour vous aider, tranquillement, à voir les aides auxquelles vous avez droit. On avance à votre rythme, il n’y a pas de mauvaise réponse. Pour commencer, dites-moi simplement : où vivez-vous aujourd’hui ?',
+      'On commence tranquillement, Jeanne. Il n’y a pas de mauvaise réponse, on avance à votre rythme. Dites-moi simplement : où vivez-vous aujourd’hui ?',
     dictee:
       'Oh, je suis chez moi, dans mon petit appartement. J’y vis depuis quarante ans, vous savez, j’y tiens beaucoup.',
     valeur: 'domicile',

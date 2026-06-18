@@ -12,12 +12,39 @@
 // Annuaire DILA pour les guichets. Le LLM ne fabrique jamais une coordonnée ni un montant.
 // Ici tout est scripté, 100 % fictif. Voir docs/prompt-mise-en-relation.md.
 
-import { COMMUNE, type Contact, type Guichet } from '@/data/miseEnRelation'
+import { COMMUNE, type Contact, type Guichet, type Identite } from '@/data/miseEnRelation'
 
-// Étape de cadrage : l'assistant demande ce que la personne vient chercher.
+// Étape d'accueil : Silneo se présente et collecte le prénom puis le moyen de rappel.
+// Sans cette étape, la mise en relation ne serait pas crédible (le mail doit être signé
+// et donner un vrai numéro de rappel). Données d'identité seulement, jamais de santé.
+export const IDENTITE_TOURS = [
+  {
+    assistant:
+      'Bonjour 👋 Je suis Silneo, votre assistant. Je suis là pour vous aider à y voir clair dans vos droits, tranquillement. Pour commencer, comment vous appelez-vous ?',
+    dictee: 'Je m’appelle Jeanne Dubois.',
+    comprisComme:
+      'Enchanté, Jeanne. Je note votre nom, juste pour qu’on se parle plus simplement.',
+    rassurance: 'Vos réponses restent entre nous et ne servent qu’à vous aider.',
+  },
+]
+
+// Le prénom et le nom sont "collectés" au début de l'échange. Le téléphone et l'e-mail
+// ne sont demandés qu'au moment où ils servent vraiment (numéro : seulement si la personne
+// confie l'envoi du mail au guichet ; e-mail : seulement si elle veut recevoir le récap).
+// Valeurs pré-remplies pour la démo, modifiables à l'écran.
+export const IDENTITE: Identite = {
+  prenom: 'Jeanne',
+  nom: 'Dubois',
+}
+
+export const TELEPHONE_DEFAUT = '06 12 34 56 78'
+export const EMAIL_DEFAUT = 'jeanne.dubois@exemple.fr'
+
+// Étape de cadrage : Silneo demande ce que la personne vient chercher (le prénom est
+// déjà connu, on ne redit pas bonjour).
 export const CADRAGE = {
   assistant:
-    'Bonjour Jeanne 👋 Je suis là pour vous aider, tranquillement. Dites-moi d’abord : qu’est-ce qui vous amène aujourd’hui ?',
+    'Très bien, Jeanne. Maintenant, dites-moi : qu’est-ce qui vous amène aujourd’hui ?',
   rassurance: 'Il n’y a pas de mauvais choix. On pourra tout reprendre quand vous voulez.',
   choix: {
     renseignement: {
@@ -106,17 +133,8 @@ const GUICHETS_ADAPTATION: Guichet[] = [
 export const CONTACT_ADAPTATION: Contact = {
   guichets: GUICHETS_ADAPTATION,
   phrase: `Bonjour, j’habite à ${COMMUNE}. Je voudrais savoir s’il existe une aide pour adapter ma salle de bain, et être accompagnée pour le dossier.`,
-  mail: {
-    destinataire: 'franceservices@roncourt-les-tilleuls.fr',
-    objet: `Demande d’accompagnement pour adapter le logement d’une personne âgée, ${COMMUNE}`,
-    corps: `Bonjour,
-
-Je vous contacte pour moi-même. J’habite à ${COMMUNE}.
-Je cherche à savoir quelles aides peuvent m’aider à adapter ma salle de bain pour rester en sécurité chez moi, et je souhaite être accompagnée dans les démarches.
-
-Pourriez-vous me recontacter ? Vous pouvez me joindre au 03 21 55 00 00, de préférence le matin.
-
-Avec mes remerciements,
-Jeanne D.`,
-  },
+  destinataire: 'franceservices@roncourt-les-tilleuls.fr',
+  objet: `Demande d’accompagnement pour adapter le logement d’une personne âgée, ${COMMUNE}`,
+  besoin:
+    'Je cherche à savoir quelles aides peuvent m’aider à adapter ma salle de bain pour rester en sécurité chez moi, et je souhaite être accompagnée dans les démarches.',
 }
