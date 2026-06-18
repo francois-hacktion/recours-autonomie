@@ -1,9 +1,12 @@
 import {
   ArrowRight,
+  BookOpen,
   Building2,
   Calculator,
   CalendarClock,
+  FolderGit2,
   Gauge,
+  GitBranch,
   HandCoins,
   Handshake,
   MapPin,
@@ -105,6 +108,25 @@ const KPIS = [
   },
 ]
 
+// Ouverture : tout est open source, y compris le catalogue des aides.
+const OUVERTURE = [
+  {
+    icone: BookOpen,
+    titre: 'Une aide, une fiche, une source',
+    texte: 'Chaque dispositif est documenté au format ouvert : sa règle, son guichet, sa source officielle, son mode de calcul.',
+  },
+  {
+    icone: FolderGit2,
+    titre: 'Un repo GitHub dédié',
+    texte: 'Le catalogue des aides vit dans son propre dépôt public, séparé du code, lisible par tous.',
+  },
+  {
+    icone: GitBranch,
+    titre: 'Vérifiable et vivant',
+    texte: 'Élus, agents, citoyens, chacun peut lire, signaler une erreur, contribuer. Corrigé au fil des évolutions réglementaires.',
+  },
+]
+
 // Roadmap indicative (ordres de grandeur de durée à valider).
 const PHASES = [
   {
@@ -170,6 +192,38 @@ export function SolutionTechnique({ onNavigate }: { onNavigate: (vue: Vue) => vo
               </div>
             )
           })}
+        </div>
+      </section>
+
+      {/* OUVERTURE / OPEN SOURCE */}
+      <section>
+        <SectionTitre eyebrow="Ouvert par principe" titre="Tout est open source, même le catalogue des aides" />
+        <div className="mt-6 rounded-2xl border-l-4 border-teal bg-teal-bg p-6 shadow-carte sm:p-8">
+          <p className="flex items-center gap-2 font-bold text-teal-hover">
+            <FolderGit2 size={22} aria-hidden />
+            Pas de boîte noire sur des droits sociaux
+          </p>
+          <p className="mt-2 max-w-3xl text-lg text-etat-ink">
+            Le code du service est public. Et surtout, la documentation des aides, c’est-à-dire la
+            règle de chaque dispositif, sa source officielle et son mode de calcul, vivra dans un
+            <strong> dépôt GitHub dédié</strong>, fiche par fiche. N’importe qui peut la lire, la
+            vérifier, signaler une erreur ou contribuer. Sur des droits sociaux, l’ouverture n’est
+            pas un bonus, c’est la condition de la confiance.
+          </p>
+          <div className="mt-6 grid gap-4 sm:grid-cols-3">
+            {OUVERTURE.map((o) => {
+              const Icone = o.icone
+              return (
+                <div key={o.titre} className="rounded-xl border border-etat-border bg-white p-5">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-teal-bg text-teal-hover">
+                    <Icone size={20} aria-hidden />
+                  </span>
+                  <h3 className="mt-3 font-bold text-etat-ink">{o.titre}</h3>
+                  <p className="mt-1 text-sm text-etat-grey">{o.texte}</p>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
